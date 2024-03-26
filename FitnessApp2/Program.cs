@@ -1,3 +1,6 @@
+using FitnessApp2.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace FitnessApp2
 {
     public class Program
@@ -5,6 +8,11 @@ namespace FitnessApp2
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            //Dependencies Injection
+            builder.Services.AddDbContext<FApplicationDbContext>(options => 
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionToDbSQL"))
+                );
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
