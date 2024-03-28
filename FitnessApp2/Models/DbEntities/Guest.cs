@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FitnessApp2.Models.DbEntities
 {
-    public class Instructor
+    public class Guest
     {
         public int Id { get; set; }
 
@@ -17,14 +17,16 @@ namespace FitnessApp2.Models.DbEntities
 
         public DateTime? AddedDate { get; set; }
 
-        [Range(1, 10)]
-        public byte? ExperienceYears { get; set; }
+        [Range(1,5)]
+        public required byte Hours { get; set; }
 
-        [RegularExpression(@"^[MF]$")]
-        public char? Gender { get; set; }
 
-        public ICollection<Guest>? Guests { get; set; }
+        public Detail? Detail { get; set; }
 
-        public ICollection<CourseInstructor>? CourseInstructors { get; set; }
+        public Section? Section { get; set; }
+
+        public Instructor? Instructor { get; set; }
+
+        public ICollection<CourseGuest>? CourseGuests { get; set; }
     }
 }

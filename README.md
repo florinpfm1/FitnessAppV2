@@ -14,6 +14,8 @@ NuGet packages:
 Entity Framework Core is a modern object-database mapper for .NET. It supports LINQ queries, change tracking, updates, and schema migrations. EF Core works with SQL Server, Azure SQL Database, SQLite, Azure Cosmos DB, MySQL, PostgreSQL, and other databases through a provider plugin API.
 -Microsoft.EntityFrameworkCore.SqlServer v8.0.3
 Microsoft SQL Server database provider for Entity Framework Core.
+-Microsoft.EntityFrameworkCore.Design v8.0.3
+Shared design-time components for Entity Framework Core tools.
 -Microsoft.EntityFrameworkCore.Tools v8.0.3  <<<--- used for Code First approach
 Entity Framework Core Tools for the NuGet Package Manager Console in Visual Studio.
 -Bootstrap v5.3.3
@@ -39,8 +41,10 @@ Work steps: for Code First approach
 3) create application DbContext class in folder Data (added 4 props reprezenting the 4 tables in db)
 4) create connection string with its authentication details in file appsettings.json
 5) add Dependency Injection in Program.cs file to be able to use the connection to SQL Server at db 'FitnessData3'
+5a) create class Seed.cs for adding some values in empty tables of the initial SQL db
 6) in PackageManagerConsole run commands 'Add-Migration <name>' and 'Update-Database' to create all needed tables in db based on model classes from folder Models->DbEntities
 7) refresh SQL Server and check the db and tables are created (check also all PK and FK are created correctly)
+7a) seed the db - in Terminal (PowerShell) while you are in the folder of your app where you have the <app_name>.csproj file run command 'dotnet run seeddata'
 8) create Controllers - add at the beginning initialization of DbContext so we can have access to db data
 9) create ViewModels
 10) create Views
