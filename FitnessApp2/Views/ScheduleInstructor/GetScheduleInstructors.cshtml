@@ -1,0 +1,116 @@
+﻿@model List<FitnessApp2.Models.ViewModels.ScheduleInstructorViewModel>
+
+@{
+    ViewData["Title"] = "Schedule Instructors";
+}
+
+<h3>@ViewData["Title"]</h3>
+<hr />
+
+@if (Model != null && Model.Any())
+{
+    @foreach (var scheduleInstructor in Model)
+    {
+        <div class="backgroundColor1">
+            <form>
+                <table class="table table-responsive table-hover">
+                    <thead>
+                        <tr class="table-active">
+                            <th class="text-center">Id</th>
+                            <th class="text-center">Instructor First Name</th>
+                            <th class="text-center">Instructor Last Name</th>
+                            <th class="text-center">Instructor Free Hours</th>
+                            <th class="text-center">Instructor Reserved Hours</th>
+                            <th class="text-center">Instructor Max Hours</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center">@scheduleInstructor.Id</td>
+                            <td class="text-center">@scheduleInstructor.FirstName</td>
+                            <td class="text-center">@scheduleInstructor.LastName</td>
+                            <td class="text-center">@scheduleInstructor.FreeHours</td>
+                            <td class="text-center">@scheduleInstructor.ReservedHours</td>
+                            <td class="text-center">@scheduleInstructor.MaxHours</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+            @if (scheduleInstructor.CrsAndGst is not null)
+            {
+                @foreach (var assignedCourseAndGuests in scheduleInstructor.CrsAndGst)
+                {
+                    <form>
+                        <table class="table table-responsive table-hover">
+                            <thead>
+                                <tr class="table-active">
+                                    <th class="text-center">Course Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center">@assignedCourseAndGuests.Crs.Name</td>
+                                </tr>
+
+                                <form>
+                                    <table class="table table-responsive table-hover">
+                                        <thead>
+                                            <tr class="table-active">
+                                                <th class="text-center">ClientID</th>
+                                                <th class="text-center">Client First Name</th>
+                                                <th class="text-center">Client Last Name</th>
+                                                <th class="text-center">Client Hours</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (assignedCourseAndGuests.Gst.Count != 0)
+                                            {
+
+                                                foreach (var assignedGuest in assignedCourseAndGuests.Gst)
+                                                {
+                                                    <tr>
+                                                        <td class="text-center">@assignedGuest.Id</td>
+                                                        <td class="text-center">@assignedGuest.FirstName</td>
+                                                        <td class="text-center">@assignedGuest.LastName</td>
+                                                        <td class="text-center">@assignedGuest.Hours</td>
+                                                    </tr>
+                                                }
+
+                                            }
+                                            else
+                                            {
+                                                <tr>
+                                                    <td colspan="6">
+                                                        <div>
+                                                            No Guests registered so far for this course!
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </form>
+                            </tbody>
+                        </table>
+                    </form>
+                }
+            }
+            else
+            {
+                <div>
+                    No Courses were assigned to instructor yet!
+                </div>
+            }
+        </div>
+        <br />
+        <br />
+    }
+}
+else
+{
+    <div>
+        No Instructor was created yet!
+    </div>
+}

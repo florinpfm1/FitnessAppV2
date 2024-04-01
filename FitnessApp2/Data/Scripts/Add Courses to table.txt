@@ -1,0 +1,19 @@
+﻿INSERT INTO Courses
+(Name, Description, Difficulty, Rating)
+VALUES 
+('Speed Cycling Hardcore', 'Cruse in Central Park virtual tour to get in shape with us.', 'Beginner', 2),
+('Fat Burning Extreme', 'All body workout following the standards of US Marines tradition.', 'Advanced', 4),
+('Boxing For Beginners', 'For fans of Rocky Balboa series we reproduce the same edge boxing level training.', 'Medium', 1),
+('Running In Group', 'Virtual group running session in our latest 3D environment - challenges with other cities available.', 'Hardcore', 5),
+('Streching For Al', 'Casual session for pre-workout and post-workout - special trainer Camille Leblanc-Bazinet from Quebec - french speaking only.', 'Hardcore', 3),
+('Freestyle Dancing', 'Special edition organized for children 5 to 10 years old - parents are also invited to show their fancy dance shakes.', 'Beginner', 1),
+('Crossfit Level 1', 'Session for learning the basics of group training - required for advancing to Crossfit Level 2.', 'Beginner', 1),
+('Crossfit Level 2', 'Program consisting of Mobility and Strength - required for advancing to Crossfit Level 3.', 'Medium', 3),
+('Crossfit Level 3', 'Program consisting of Endurance and WOD (Workout of the Day) - required for national crossfit competitions.', 'Advanced', 5),
+('Tabata 20s/10s, 4 sets/each of the 3 parts ', 'Example of a part: one set of squats 20s, rest 10s, then repeat 3 times the set.', 'Medium', 4),
+('Zumba with latino music', 'No latino dancing skills required, but you do have to move all the time, repetition of watch-move-repeat style of instructor.', 'Beginner', 2),
+('Oh my!! I want those abs!', 'This course has been divided into male and female groups for optimum training exercises compatibility.', 'Medium', 1),
+('Abs are created in kitchen', 'Please note this course has no training involved, is a healthy cooking for best fit boy/girl body.', 'Beginner', 1),
+('Fat Burning Squats', 'More details soon to come about this course.', NULL, 4),
+('Boxing styles', 'Course with travel involved to other training sites for friendly matches.', 'Medium', NULL),
+('Hello Fitness Friends', NULL, NULL, NULL)

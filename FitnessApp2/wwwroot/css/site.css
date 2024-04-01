@@ -20,3 +20,21 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.backgroundColor1 {
+    background-color: aliceblue
+}
+
+.myDiv {
+    padding-bottom: 15px;
+    color: rebeccapurple;
+    font-style: italic;
+    text-align: center
+}
+
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 99%;
+}

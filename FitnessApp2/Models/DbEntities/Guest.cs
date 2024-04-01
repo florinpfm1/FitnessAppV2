@@ -18,15 +18,15 @@ namespace FitnessApp2.Models.DbEntities
         public DateTime? AddedDate { get; set; }
 
         [Range(1,5)]
-        public required byte Hours { get; set; }
+        public byte Hours { get; set; }
 
-
+        public int? DetailId { get; set; }
         public Detail? Detail { get; set; }
 
+        public int? SectionId { get; set; }
         public Section? Section { get; set; }
 
-        public Instructor? Instructor { get; set; }
-
         public ICollection<CourseGuest>? CourseGuests { get; set; }
+        public ICollection<InstructorGuest>? InstructorGuests { get; set; }
     }
 }

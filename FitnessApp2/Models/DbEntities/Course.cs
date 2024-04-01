@@ -11,6 +11,12 @@ namespace FitnessApp2.Models.DbEntities
         [StringLength(50, MinimumLength = 2)]
         public string Name { get; set; }
 
+        public string? Description { get; set; }
+
+        public string? Difficulty {  get; set; }
+        
+        public byte? Rating { get; set; }
+
         public ICollection<CourseInstructor>? CourseInstructors { get; set; }
 
         public ICollection<CourseGuest>? CourseGuests { get; set;}

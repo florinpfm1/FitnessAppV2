@@ -1,0 +1,74 @@
+﻿@model List<FitnessApp2.Models.ViewModels.WaitlistGuestViewModel>
+
+@{
+    ViewData["Title"] = "Waitlist Guests";   //aici e numele de View
+    //var successMessage = TempData["successMessage"]?.ToString();
+    //var errorMessage = TempData["errorMessage"]?.ToString();
+}
+
+<h3>@ViewData["Title"]</h3>
+<hr />
+<!-- *********** temp messages for 5s *************** -->
+@*
+    @if (!string.IsNullOrWhiteSpace(successMessage))
+{
+    <div class="alert alert-success">
+        <strong>Success! </strong>@successMessage
+        <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+}
+else if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-danger">
+        <strong>Error! </strong>@errorMessage
+        <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+}
+*@
+
+<form>
+    <table class="table table-responsive table-hover">
+        <thead>
+            <tr class="table-active">
+                <th class="text-center">Id</th>
+                <th class="text-center">FirstName</th>
+                <th class="text-center">LastName</th>
+                <th class="text-center">Hours</th>
+                <th class="text-center">Email</th>
+                <th class="text-center">Phone</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var waitlistGuest in Model)
+                {
+                    <tr>
+                        <td class="text-center">@waitlistGuest.Id</td>
+                        <td class="text-center">@waitlistGuest.FirstName</td>
+                        <td class="text-center">@waitlistGuest.LastName</td>
+                        <td class="text-center">@waitlistGuest.Hours</td>
+                        <td class="text-center">@waitlistGuest.Email</td>
+                        <td class="text-center">@waitlistGuest.Phone</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6">
+                        <div>
+                            No Guests are present in the waitlist!
+                        </div>
+                    </td>
+                </tr>
+            }
+
+
+        </tbody>
+    </table>
+</form>
+
+

@@ -113,9 +113,6 @@ namespace FitnessApp2.Migrations
                     b.Property<byte>("Hours")
                         .HasColumnType("tinyint");
 
-                    b.Property<int?>("InstructorId")
-                        .HasColumnType("int");
-
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -127,8 +124,6 @@ namespace FitnessApp2.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DetailId");
-
-                    b.HasIndex("InstructorId");
 
                     b.HasIndex("SectionId");
 
@@ -165,6 +160,21 @@ namespace FitnessApp2.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Instructors");
+                });
+
+            modelBuilder.Entity("FitnessApp2.Models.DbEntities.InstructorGuest", b =>
+                {
+                    b.Property<int>("InstructorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GuestId")
+                        .HasColumnType("int");
+
+                    b.HasKey("InstructorId", "GuestId");
+
+                    b.HasIndex("GuestId");
+
+                    b.ToTable("InstructorGuests");
                 });
 
             modelBuilder.Entity("FitnessApp2.Models.DbEntities.Section", b =>
@@ -229,19 +239,32 @@ namespace FitnessApp2.Migrations
                         .WithMany()
                         .HasForeignKey("DetailId");
 
-                    b.HasOne("FitnessApp2.Models.DbEntities.Instructor", "Instructor")
-                        .WithMany("Guests")
-                        .HasForeignKey("InstructorId");
-
                     b.HasOne("FitnessApp2.Models.DbEntities.Section", "Section")
                         .WithMany("Guests")
                         .HasForeignKey("SectionId");
 
                     b.Navigation("Detail");
 
-                    b.Navigation("Instructor");
-
                     b.Navigation("Section");
+                });
+
+            modelBuilder.Entity("FitnessApp2.Models.DbEntities.InstructorGuest", b =>
+                {
+                    b.HasOne("FitnessApp2.Models.DbEntities.Guest", "Guest")
+                        .WithMany("InstructorGuests")
+                        .HasForeignKey("GuestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FitnessApp2.Models.DbEntities.Instructor", "Instructor")
+                        .WithMany("InstructorGuests")
+                        .HasForeignKey("InstructorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Guest");
+
+                    b.Navigation("Instructor");
                 });
 
             modelBuilder.Entity("FitnessApp2.Models.DbEntities.Course", b =>
@@ -254,13 +277,15 @@ namespace FitnessApp2.Migrations
             modelBuilder.Entity("FitnessApp2.Models.DbEntities.Guest", b =>
                 {
                     b.Navigation("CourseGuests");
+
+                    b.Navigation("InstructorGuests");
                 });
 
             modelBuilder.Entity("FitnessApp2.Models.DbEntities.Instructor", b =>
                 {
                     b.Navigation("CourseInstructors");
 
-                    b.Navigation("Guests");
+                    b.Navigation("InstructorGuests");
                 });
 
             modelBuilder.Entity("FitnessApp2.Models.DbEntities.Section", b =>

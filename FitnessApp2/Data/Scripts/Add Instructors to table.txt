@@ -1,0 +1,16 @@
+﻿INSERT INTO Instructors
+(FirstName, LastName, AddedDate, ExperienceYears, Gender)
+VALUES 
+('Camile', 'Leblanc-Bazinet', GetUtcDate(), 5, 'F'),
+('Brooke', 'Ence', GetUtcDate(), 3, 'F'),
+('Julie', 'Foucher', GetUtcDate(), 6, 'F'),
+('Annie', 'Mist', GetUtcDate(), 9, 'F'),
+('Sara', 'Sigmundsdottir ', GetUtcDate(), 5, 'F'),
+('Lauren', 'Fisher ', GetUtcDate(), 7, 'F'),
+('Rich', 'Froning', GetUtcDate(), 5, 'M'),
+('Mat', 'Fraser', GetUtcDate(), 1, 'M'),
+('Lucas', 'Parker', GetUtcDate(), 2, 'M'),
+('Daniel', 'Segars', GetUtcDate(), 4, 'M'),
+('Jeff', 'Seid', NULL, 6, 'M'),
+('Lazar', 'Angelov', GetUtcDate(), NULL, 'M'),
+('Scott', 'Herman', GetUtcDate(), 11, NULL)

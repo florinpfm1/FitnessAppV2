@@ -45,6 +45,9 @@ Work steps: for Code First approach
 6) in PackageManagerConsole run commands 'Add-Migration <name>' and 'Update-Database' to create all needed tables in db based on model classes from folder Models->DbEntities
 7) refresh SQL Server and check the db and tables are created (check also all PK and FK are created correctly)
 7a) seed the db - in Terminal (PowerShell) while you are in the folder of your app where you have the <app_name>.csproj file run command 'dotnet run seeddata'
+7b) refresh SQL Server and check some values are added to all tables
+7c) repository - makes code more flexible - is where we place all our SQL db calls (by using the context from Entity)
+
 8) create Controllers - add at the beginning initialization of DbContext so we can have access to db data
 9) create ViewModels
 10) create Views

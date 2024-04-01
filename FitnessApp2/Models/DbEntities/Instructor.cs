@@ -23,8 +23,8 @@ namespace FitnessApp2.Models.DbEntities
         [RegularExpression(@"^[MF]$")]
         public char? Gender { get; set; }
 
-        public ICollection<Guest>? Guests { get; set; }
-
         public ICollection<CourseInstructor>? CourseInstructors { get; set; }
+        public ICollection<InstructorGuest>? InstructorGuests { get; set; }
+
     }
 }

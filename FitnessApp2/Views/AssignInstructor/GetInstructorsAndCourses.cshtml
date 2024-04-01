@@ -1,0 +1,79 @@
+﻿@model List<FitnessApp2.Models.ViewModels.InstructorWithCoursesViewModel>  //aici specificam Modelul primit de unde sa il ia
+
+@{
+    ViewData["Title"] = "Assign Instructors";   //aici e numele de View
+    var successMessage = TempData["successMessage"]?.ToString();
+    var errorMessage = TempData["errorMessage"]?.ToString();
+}
+
+<h3>@ViewData["Title"]</h3>
+<hr />
+<!-- *********** temp messages for 5s *************** -->
+@if (!string.IsNullOrWhiteSpace(successMessage))
+{
+    <div class="alert alert-success">
+        <strong>Success! </strong>@successMessage
+        <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+else if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-danger">
+        <strong>Error! </strong>@errorMessage
+        <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+<form>
+    <table class="table table-responsive table-hover">
+        <thead>
+            <tr class="table-active">
+                <th class="text-center">Id</th>
+                <th class="text-center">FirstName</th>
+                <th class="text-center">LastName</th>
+                <th class="text-center">AssignedCourses</th>
+                <th class="text-center">Action Buttons</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var instructorWithCourses in Model)  //aici Model reprezinta ce apare sus cu ICollection<FitnessApp2.Models.DbEntities.Instructor> deci e o lista ICollection de obiecte instructor
+                {
+                    <tr>
+                        <td class="text-center">@instructorWithCourses.Id</td> @*aici @instructor ma folosesc de variabila instructor din foreach, ii pot accesa proprietatile cu . *@
+                        <td class="text-center">@instructorWithCourses.FirstName</td>
+                        <td class="text-center">@instructorWithCourses.LastName</td>
+                        <td class="text-center">
+                            @if (instructorWithCourses.AssignedCourses is not null)
+                            {
+                                @foreach (var courseName in instructorWithCourses.AssignedCourses)
+                                {
+                                    <div>@courseName</div>
+                                }
+                            }
+                            else
+                            {
+                                <div>No Courses were assigned to instructor.</div>
+                            }
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm">
+                                <a asp-controller="AssignInstructor" asp-action="AssignInstructor" asp-route-id="@instructorWithCourses.Id" class="btn btn-primary">Assign Instructor</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6">
+                        <div>
+                            No Instructors have been created yet!
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</form>

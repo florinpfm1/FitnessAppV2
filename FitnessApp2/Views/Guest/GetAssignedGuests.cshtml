@@ -1,0 +1,80 @@
+﻿@model List<FitnessApp2.Models.ViewModels.GuestViewModel>
+
+@{
+    ViewData["Title"] = "Guests";   //aici e numele de View
+    var successMessage = TempData["successMessage"]?.ToString();
+    var errorMessage = TempData["errorMessage"]?.ToString();
+}
+
+<h3>@ViewData["Title"]</h3>
+<hr />
+<!-- *********** temp messages for 5s *************** -->
+@if (!string.IsNullOrWhiteSpace(successMessage))
+{
+    <div class="alert alert-success">
+        <strong>Success! </strong>@successMessage
+        <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+}
+else if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-danger">
+        <strong>Error! </strong>@errorMessage
+        <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+}
+<form>
+    <button asp-action="Create" asp-controller="Client" class="btn btn-primary">Create Guest</button>
+    <table class="table table-responsive table-hover">
+        <thead>
+            <tr class="table-active">
+                <th class="text-center">Id</th>
+                <th class="text-center">FirstName</th>
+                <th class="text-center">LastName</th>
+                <th class="text-center">AddedDate</th>
+                <th class="text-center">Hours</th>
+                <th class="text-center">Section</th>
+                <th class="text-center">Action Buttons</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var client in Model)
+                {
+                    <tr>
+                        <td class="text-center">@client.Id</td>
+                        <td class="text-center">@client.FirstName</td>
+                        <td class="text-center">@client.LastName</td>
+                        <td class="text-center">@client.AddedDate.ToString()</td>
+                        <td class="text-center">@client.Hours</td>
+                        <td class="text-center">@client.Section</td>
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm">
+                                <a asp-controller="Client" asp-action="Edit" asp-route-id="@client.Id" class="btn btn-primary">Edit</a>
+                            </div>
+                            <div class="btn-group btn-group-sm">
+                                <a asp-controller="Client" asp-action="Delete" asp-route-id="@client.Id" class="btn btn-danger">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6">
+                        <div>
+                            No Guests were added to any course yet!
+                        </div>
+                    </td>
+                </tr>
+            }
+
+
+        </tbody>
+    </table>
+</form>
+

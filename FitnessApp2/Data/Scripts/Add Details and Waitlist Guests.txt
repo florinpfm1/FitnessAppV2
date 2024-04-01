@@ -1,0 +1,32 @@
+﻿
+
+INSERT INTO Details
+(Email, Phone)
+VALUES 
+('bogdan@gmail.com', '0722141252'),
+('alex@gmail.com', '0733141252'),
+('darla@gmail.com', '07991712592'),
+('mihaela@gmail.com', '0766789789'),
+('stefan@gmail.com', '0755949250'),
+('simona@gmail.com', '0788141333'),
+('maria@gmail.com', '0744161951'),
+('raluca@gmail.com', '0780141455'),
+('camelia@gmail.com', '0707898257'),
+('marius@gmail.com', '0752555259'),
+('ovi@gmail.com', '0783874696');
+
+
+INSERT INTO Guests
+(FirstName, LastName, AddedDate, Hours, DetailId, SectionId)
+VALUES 
+('Bogdan', 'Iulici', NULL, 1, 1, NULL),
+('Alex', 'Voinea', NULL, 1, 2, NULL),
+('Darla', 'Mihailescu', NULL, 1, 3, NULL),
+('Mihaela', 'Alescu', NULL, 1, 4, NULL),
+('Stefan', 'Imbraile', NULL, 1, 5, NULL),
+('Simona', 'Custov', NULL, 1, 6, NULL),
+('Maria', 'Bare', NULL, 1, 7, NULL),
+('Raluca', 'Neaga', NULL, 1, 8, NULL),
+('Camelia', 'Dures', NULL, 1, 9, NULL),
+('Marius', 'Marem', NULL, 1, 10, NULL),
+('Ovi', 'Zagov', NULL, 1, 11, NULL);

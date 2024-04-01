@@ -1,0 +1,55 @@
+﻿@model List<FitnessApp2.Models.ViewModels.CourseViewModel>
+
+@{
+    ViewData["Title"] = "Courses";                              
+}
+
+<h3>@ViewData["Title"]</h3>
+<hr />
+<form>
+    <table class="table table-responsive table-hover">
+        <thead>
+            <tr class="table-active">
+                <th class="text-center">Id</th>
+                <th class="text-center">Name</th>
+                <th class="text-center">Description</th>
+                <th class="text-center">Difficulty</th>
+                <th class="text-center">Rating</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var client in Model)
+                {
+                    <tr>
+                        <td class="text-center">@client.Id</td>
+                        <td class="text-center">@client.Name</td>
+                        <td class="text-center">@client.Description</td>
+                        <td class="text-center">@client.Difficulty</td>
+                        <td class="text-center">
+                            @if (client.Rating != (byte)0)
+                            {
+                                <div>@client.Rating</div>
+                            }
+                            else
+                            {
+                                <div>No rating available.</div>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6">
+                        <div>
+                            No Courses have been created yet!
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</form>

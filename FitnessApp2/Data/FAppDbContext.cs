@@ -18,6 +18,7 @@ namespace FitnessApp2.Data
         public DbSet<Course> Courses { get; set; }
         public DbSet<CourseInstructor> CourseInstructors { get; set; }
         public DbSet<CourseGuest> CourseGuests { get; set; }
+        public DbSet<InstructorGuest> InstructorGuests { get; set; }
 
         //---in case of many-to-many relationships for SQL tables here we need to customize the links of the FK's together:---
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -44,6 +45,16 @@ namespace FitnessApp2.Data
                 .WithMany(cg => cg.CourseGuests)
                 .HasForeignKey(g => g.GuestId);
 
+            modelBuilder.Entity<InstructorGuest>()
+                .HasKey(ig => new { ig.InstructorId, ig.GuestId });
+            modelBuilder.Entity<InstructorGuest>()
+                .HasOne(i => i.Instructor)
+                .WithMany(ig => ig.InstructorGuests)
+                .HasForeignKey(i => i.InstructorId);
+            modelBuilder.Entity<InstructorGuest>()
+                .HasOne(g => g.Guest)
+                .WithMany(ig => ig.InstructorGuests)
+                .HasForeignKey(g => g.GuestId);
         }
     }
 }

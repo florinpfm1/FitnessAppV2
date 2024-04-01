@@ -103,8 +103,7 @@ namespace FitnessApp2.Migrations
                     AddedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Hours = table.Column<byte>(type: "tinyint", nullable: false),
                     DetailId = table.Column<int>(type: "int", nullable: true),
-                    SectionId = table.Column<int>(type: "int", nullable: true),
-                    InstructorId = table.Column<int>(type: "int", nullable: true)
+                    SectionId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -113,11 +112,6 @@ namespace FitnessApp2.Migrations
                         name: "FK_Guests_Details_DetailId",
                         column: x => x.DetailId,
                         principalTable: "Details",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Guests_Instructors_InstructorId",
-                        column: x => x.InstructorId,
-                        principalTable: "Instructors",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Guests_Sections_SectionId",
@@ -150,6 +144,30 @@ namespace FitnessApp2.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "InstructorGuests",
+                columns: table => new
+                {
+                    InstructorId = table.Column<int>(type: "int", nullable: false),
+                    GuestId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InstructorGuests", x => new { x.InstructorId, x.GuestId });
+                    table.ForeignKey(
+                        name: "FK_InstructorGuests_Guests_GuestId",
+                        column: x => x.GuestId,
+                        principalTable: "Guests",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_InstructorGuests_Instructors_InstructorId",
+                        column: x => x.InstructorId,
+                        principalTable: "Instructors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_CourseGuests_GuestId",
                 table: "CourseGuests",
@@ -166,14 +184,14 @@ namespace FitnessApp2.Migrations
                 column: "DetailId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Guests_InstructorId",
-                table: "Guests",
-                column: "InstructorId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Guests_SectionId",
                 table: "Guests",
                 column: "SectionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InstructorGuests_GuestId",
+                table: "InstructorGuests",
+                column: "GuestId");
         }
 
         /// <inheritdoc />
@@ -186,16 +204,19 @@ namespace FitnessApp2.Migrations
                 name: "CourseInstructors");
 
             migrationBuilder.DropTable(
-                name: "Guests");
+                name: "InstructorGuests");
 
             migrationBuilder.DropTable(
                 name: "Courses");
 
             migrationBuilder.DropTable(
-                name: "Details");
+                name: "Guests");
 
             migrationBuilder.DropTable(
                 name: "Instructors");
+
+            migrationBuilder.DropTable(
+                name: "Details");
 
             migrationBuilder.DropTable(
                 name: "Sections");
