@@ -41,5 +41,13 @@ namespace FitnessApp2.Controllers
 
             return View(coursesViewModel);
         }
+
+        
+
+
+
+
+
+
     }
 }

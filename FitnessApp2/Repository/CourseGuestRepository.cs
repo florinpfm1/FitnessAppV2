@@ -13,9 +13,9 @@ namespace FitnessApp2.Repository
             this._context = context;
         }
 
-        public CourseGuest GetCourseByGuestId(int guestId)
+        public ICollection<CourseGuest> GetCoursesByGuestId(int guestId)
         {
-            return _context.CourseGuests.Where(c => c.GuestId == guestId).FirstOrDefault();
+            return _context.CourseGuests.Where(c => c.GuestId == guestId).ToList();
         }
 
         public ICollection<CourseGuest> GetGuestsByCourseId(int courseId)

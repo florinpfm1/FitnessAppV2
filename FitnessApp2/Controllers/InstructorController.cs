@@ -40,12 +40,65 @@ namespace FitnessApp2.Controllers
         }
 
         //--------------- CREATE A NEW INSTRUCTORS ---------------
-        [HttpPost]
-        public IActionResult CreateInstructor(Instructor instructor)
+        [HttpGet]
+        public IActionResult CreateInstructor()
         {
-
-            return View(instructor);
+            return View();
         }
+
+        [HttpPost]
+        public IActionResult CreateInstructor(InstructorViewModel instructorViewModel)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var instructorNameExists = _instructorRepository.GetInstructor(instructorViewModel.FirstName, instructorViewModel.LastName);
+                    if (instructorNameExists != null)
+                    {
+                        Instructor instructor = new Instructor()
+                        {
+                            FirstName = instructorViewModel.FirstName,
+                            LastName = instructorViewModel.LastName,
+                            AddedDate = instructorViewModel.AddedDate,
+                            ExperienceYears = instructorViewModel.ExperienceYears,
+                            Gender = instructorViewModel.Gender
+                        };
+
+                        bool statusCreateInstructorInDb = _instructorRepository.CreateInstructor(instructor);
+                        if (statusCreateInstructorInDb)
+                        {
+                            TempData["successMessage"] = "Instructor created successfully!";
+                            return RedirectToAction("GetInstructors", "Instructor");
+                        }
+                        else
+                        {
+                            TempData["errorMessage"] = "Something went wrong when saving to database.";
+                            return View();
+                        }
+                    }
+                    else
+                    {
+                        TempData["errorMessage"] = "Instructor already exists.";
+                        return View();
+                    }
+                }
+                else
+                {
+                    TempData["errorMessage"] = "Model data is not valid.";
+                    return View();
+                }
+            } catch (Exception ex)
+            {
+                TempData["errorMessage"] = ex.Message;
+                return View();
+            }
+        }
+
+
+
+
+
 
     }
 }

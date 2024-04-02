@@ -59,5 +59,19 @@ namespace FitnessApp2.Repository
         {
             return _context.Guests.Any(g => g.Id == guestId);
         }
+
+        //creating a new guest
+
+        public bool CreateGuest(Guest guest)
+        {
+            _context.Add(guest);
+            return Save();
+        }
+
+        public bool Save()
+        {
+            var saved = _context.SaveChanges();
+            return saved > 0 ? true : false;
+        }
     }
 }

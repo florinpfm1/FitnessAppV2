@@ -4,6 +4,7 @@ namespace FitnessApp2.Interfaces
 {
     public interface IGuestRepository
     {
+        //retrieving
         ICollection<Guest> GetGuests();
         ICollection<Guest> GetAssignedGuests();
         ICollection<Guest> GetUnassignedGuests();
@@ -12,5 +13,10 @@ namespace FitnessApp2.Interfaces
         //ICollection<Guest> GetGuests(DateOnly date);
         ICollection<Guest> GetGuests(byte hours);
         bool GuestExists(int guestId);
+
+        //creating, updating
+        public bool CreateGuest(Guest guest);
+        public bool Save();
+
     }
 }

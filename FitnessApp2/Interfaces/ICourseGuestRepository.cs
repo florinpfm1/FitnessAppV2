@@ -4,7 +4,7 @@ namespace FitnessApp2.Interfaces
 {
     public interface ICourseGuestRepository
     {
-        CourseGuest GetCourseByGuestId(int guestId);
+        ICollection<CourseGuest> GetCoursesByGuestId(int guestId);
         ICollection<CourseGuest> GetGuestsByCourseId(int courseId);
 
         bool CourseHasGuests(int courseId);

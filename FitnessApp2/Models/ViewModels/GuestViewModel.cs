@@ -18,9 +18,13 @@ namespace FitnessApp2.Models.ViewModels
         [DisplayName("Hours/Week")]
         public byte Hours { get; set; }
 
-        public string? Section { get; set; }
+        public string SectionName { get; set; }
+
+        //public string? SectionName { get; set; }
         
-        public string? Instructor { get; set; }
+        //public string InstructorName { get; set; }
+
+        //public string CourseName { get; set; }
         
 
         /*

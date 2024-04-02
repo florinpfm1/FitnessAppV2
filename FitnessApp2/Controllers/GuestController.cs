@@ -4,6 +4,8 @@ using FitnessApp2.Models.DbEntities;
 using FitnessApp2.Models.ViewModels;
 using FitnessApp2.Repository;
 using Microsoft.AspNetCore.Mvc;
+using static System.Collections.Specialized.BitVector32;
+using Section = FitnessApp2.Models.DbEntities.Section;
 
 namespace FitnessApp2.Controllers
 {
@@ -29,6 +31,7 @@ namespace FitnessApp2.Controllers
 
         public IInstructorRepository InstructorRepository { get; }
 
+        //--------------- RETRIEVE ALL ASSIGNED GUESTS ---------------
         public IActionResult GetAssignedGuests()
         {
             ICollection<Guest> guests = _guestRepository.GetAssignedGuests();
@@ -47,8 +50,7 @@ namespace FitnessApp2.Controllers
                     LastName = guest.LastName,
                     AddedDate = guest.AddedDate,
                     Hours = guest.Hours,
-                    Section = currentSection.Name,
-                    //Instructor = currentInstructor.FirstName + " " + currentInstructor.LastName,
+                    SectionName = currentSection.Name
 
                 };
                 guestsViewModel.Add(guestViewModel);
@@ -57,8 +59,11 @@ namespace FitnessApp2.Controllers
             return View(guestsViewModel);
         }
 
+        //--------------- RETRIEVE ALL UNASSIGNED GUESTS ---------------
         public IActionResult GetUnassignedGuests()
         {
+            
+
             ICollection<Guest> guests = _guestRepository.GetUnassignedGuests();
             List<Guest> guestsAsList = guests.ToList();
 
@@ -82,5 +87,125 @@ namespace FitnessApp2.Controllers
 
             return View(waitlistGuestsViewModel);
         }
+
+        //--------------- CREATE A NEW GUEST ---------------
+
+        [HttpGet]
+        public IActionResult CreateGuest()
+        {
+            //get a list of sections that can be assigned to guest
+            //List<Section> allSections = _sectionRepository.GetSections().ToList();
+            //ViewData["allSections"] = allSections;
+
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult CreateGuest(GuestViewModel guestViewModel)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var guestNameExists = _guestRepository.GetGuest(guestViewModel.FirstName, guestViewModel.LastName);
+                    if (guestNameExists is null)
+                    {
+                        //find id of chosen Section name
+                        Section sectionSelected = _sectionRepository.GetSection(guestViewModel.SectionName);
+
+                        if (sectionSelected is not null)
+                        {
+                            Guest guest = new Guest()
+                            {
+                                FirstName = guestViewModel.FirstName,
+                                LastName = guestViewModel.LastName,
+                                AddedDate = guestViewModel.AddedDate,
+                                Hours = guestViewModel.Hours,
+                                //DetailId = 
+                                SectionId = sectionSelected.Id,
+                            };
+
+                            bool statusCreateGuestInDb = _guestRepository.CreateGuest(guest);
+                            if (statusCreateGuestInDb)
+                            {
+                                TempData["successMessage"] = "Instructor created successfully!";
+                                return RedirectToAction("GetAssignedGuests", "Guest");
+                            }
+                            else
+                            {
+                                TempData["errorMessage"] = "Something went wrong when saving to database.";
+                                return View();
+                            }
+                        }
+                        else
+                        {
+                            TempData["errorMessage"] = "Invalid Section name. Please choose an existing name.";
+                            return View();
+                        }
+                    }
+                    else
+                    {
+                        TempData["errorMessage"] = "Guest already exists.";
+                        return View();
+                    }
+                }
+                else
+                {
+                    TempData["errorMessage"] = "Model data is not valid.";
+                    return View();
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["errorMessage"] = ex.Message;
+                return View();
+            }
+
+            
+        }
+
+        //--------------- ASSIGN GUEST TO COURSE AND INSTRUCTOR ---------------
+        [HttpGet]
+        public IActionResult AssignGuest()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult AssignGuest(GuestViewModel guestViewModel)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    //check all fields in model to be valid
+                    //check instructor name to be present (dropdown)
+                    //check course name to be present (dropdown)
+                    //check hours to be present
+
+                    //verify chosen instructor has freeHours >= hours from guest
+                    //IF FALSE --->>> create new user and add to waitlist
+                    //IF TRUE --->>> 
+                    //add Section if was provided
+                    //add guest to course
+                    //add guest to instructor
+                } 
+                else
+                {
+                    TempData["errorMessage"] = "Model data is not valid.";
+                    return View();
+                }
+
+            } catch (Exception ex)
+            {
+                TempData["errorMessage"] = ex.Message;
+                return View();
+            }
+
+            return View();
+        }
+
+
+
     }
 }

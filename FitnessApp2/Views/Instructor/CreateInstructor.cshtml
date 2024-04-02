@@ -1,0 +1,61 @@
+﻿@model FitnessApp2.Models.ViewModels.InstructorViewModel
+
+@{
+    ViewData["Title"] = "Create Instructor";
+    var errorMessage = TempData["errorMessage"]?.ToString();
+}
+
+<h3>@ViewData["Title"]</h3>
+<hr />
+<!-- *********** SERVER SIDE VALIDATION *************** -->
+@if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-danger">
+        <strong>Error! </strong>@errorMessage
+        <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+}
+<form action="CreateInstructor" method="post">
+    <div class="mb-3">
+        <label class="form-label">First Name</label>
+        <input type="text" class="form-control" asp-for="FirstName" />
+        <span asp-validation-for="FirstName" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Last Name</label>
+        <input type="text" class="form-control" asp-for="LastName" />
+        <span asp-validation-for="LastName" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Date Added</label>
+        <input type="date" class="form-control" asp-for="AddedDate" />
+        <span asp-validation-for="AddedDate" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Years Experience</label>
+        <input type="text" class="form-control" asp-for="ExperienceYears" />
+        <span asp-validation-for="ExperienceYears" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Gender</label>
+        <input type="text" class="form-control" asp-for="Gender" />
+        <span asp-validation-for="Gender" class="text-danger"></span>
+    </div>
+    <div class="d-grid">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</form>
+<!-- *********** CLIENT SIDE VALIDATION *************** -->
+<!-- aici facem legatura cu scripturi de client side validation pt instructor data care vine de la forms din webpage fields -->
+<!-- momentan e comentata pt ca vreau sa fac doar server side validation -->
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+
+
+
+

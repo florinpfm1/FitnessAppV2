@@ -26,7 +26,7 @@ else if (!string.IsNullOrWhiteSpace(errorMessage))
 
 }
 <form>
-    <button asp-action="Create" asp-controller="Client" class="btn btn-primary">Create Guest</button>
+    <button asp-action="CreateGuest" asp-controller="Guest" class="btn btn-primary">Create Guest</button>
     <table class="table table-responsive table-hover">
         <thead>
             <tr class="table-active">
@@ -42,21 +42,21 @@ else if (!string.IsNullOrWhiteSpace(errorMessage))
         <tbody>
             @if (Model != null && Model.Any())
             {
-                @foreach (var client in Model)
+                @foreach (var guest in Model)
                 {
                     <tr>
-                        <td class="text-center">@client.Id</td>
-                        <td class="text-center">@client.FirstName</td>
-                        <td class="text-center">@client.LastName</td>
-                        <td class="text-center">@client.AddedDate.ToString()</td>
-                        <td class="text-center">@client.Hours</td>
-                        <td class="text-center">@client.Section</td>
+                        <td class="text-center">@guest.Id</td>
+                        <td class="text-center">@guest.FirstName</td>
+                        <td class="text-center">@guest.LastName</td>
+                        <td class="text-center">@guest.AddedDate.ToString()</td>
+                        <td class="text-center">@guest.Hours</td>
+                        <td class="text-center">@guest.SectionName</td>
                         <td class="text-center">
                             <div class="btn-group btn-group-sm">
-                                <a asp-controller="Client" asp-action="Edit" asp-route-id="@client.Id" class="btn btn-primary">Edit</a>
+                                <a asp-controller="Client" asp-action="Edit" asp-route-id="@guest.Id" class="btn btn-primary">Edit</a>
                             </div>
                             <div class="btn-group btn-group-sm">
-                                <a asp-controller="Client" asp-action="Delete" asp-route-id="@client.Id" class="btn btn-danger">Delete</a>
+                                <a asp-controller="Client" asp-action="Delete" asp-route-id="@guest.Id" class="btn btn-danger">Delete</a>
                             </div>
                         </td>
                     </tr>

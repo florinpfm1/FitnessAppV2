@@ -15,13 +15,15 @@ namespace FitnessApp2.Controllers
         private readonly ICourseInstructorRepository _courseInstructorRepository;
         private readonly ICourseRepository _courseRepository;
         private readonly ICourseGuestRepository _courseGuestRepository;
+        private readonly IInstructorGuestRepository _instructorGuestRepository;
 
         public ScheduleInstructorController(
             IInstructorRepository instructorRepository, 
             IGuestRepository guestRepository,
             ICourseInstructorRepository courseInstructorRepository,
             ICourseRepository courseRepository,
-            ICourseGuestRepository courseGuestRepository
+            ICourseGuestRepository courseGuestRepository,
+            IInstructorGuestRepository instructorGuestRepository
             )
         {
             this._instructorRepository = instructorRepository;
@@ -29,6 +31,7 @@ namespace FitnessApp2.Controllers
             this._courseInstructorRepository = courseInstructorRepository;
             this._courseRepository = courseRepository;
             this._courseGuestRepository = courseGuestRepository;
+            this._instructorGuestRepository = instructorGuestRepository;
         }
 
         [HttpGet]
@@ -59,11 +62,20 @@ namespace FitnessApp2.Controllers
                         if (courseHasGuests)
                         {
                             ICollection<CourseGuest> guestsForCourse = _courseGuestRepository.GetGuestsByCourseId(courseForInstructor.CourseId);
+                            ICollection<InstructorGuest> guestsForInstructor = _instructorGuestRepository.GetGuestsByInstructorId(instructor.Id);
                             foreach (CourseGuest guestForCourse in guestsForCourse)
                             {
-                                Guest currentGuest = new Guest();
-                                currentGuest = _guestRepository.GetGuest(guestForCourse.GuestId);
-                                guestsOfACourse.Add(currentGuest);
+                                foreach (InstructorGuest guestForInstructor in guestsForInstructor)
+                                {
+                                    if (guestForInstructor.GuestId == guestForCourse.GuestId)
+                                    {
+                                        Guest currentGuest = new Guest();
+                                        currentGuest = _guestRepository.GetGuest(guestForCourse.GuestId);
+                                        guestsOfACourse.Add(currentGuest);
+                                        assignedHoursForInstructor += currentGuest.Hours; //add hours of each guestOfInstructor to his instructor
+                                    }
+                                }
+                                
                             }
                         }
 
@@ -77,9 +89,9 @@ namespace FitnessApp2.Controllers
                     Id = instructor.Id,
                     FirstName = instructor.FirstName,
                     LastName = instructor.LastName,
-                    FreeHours = (byte)(20 - assignedHoursForInstructor),
+                    FreeHours = (byte)(40 - assignedHoursForInstructor),
                     ReservedHours = assignedHoursForInstructor,
-                    MaxHours = (byte)20,
+                    MaxHours = (byte)40,
                     CrsAndGst = (instrucHasCourses) ? crsAndGst : null
                 };
                 scheduleInstructorsViewModel.Add(scheduleInstructorViewModel);

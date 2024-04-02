@@ -28,6 +28,7 @@ namespace FitnessApp2
             builder.Services.AddScoped<ICourseRepository, CourseRepository>();
             builder.Services.AddScoped<ICourseInstructorRepository, CourseInstructorRepository>();
             builder.Services.AddScoped<ICourseGuestRepository, CourseGuestRepository>();
+            builder.Services.AddScoped<IInstructorGuestRepository, InstructorGuestRepository>();
             //to ignore json cycles for many-to-many relationship in SQL tables
             /*
                 builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
