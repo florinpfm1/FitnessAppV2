@@ -165,7 +165,7 @@ namespace FitnessApp2.Services
                 if (instrucHasCourses)
                 {
                     ICollection<CourseInstructor> coursesForInstructor = _courseInstructorRepository.GetCoursesByInstructorId(instructor.Id);
-                    foreach (var courseForInstructor in coursesForInstructor)
+                    foreach (CourseInstructor courseForInstructor in coursesForInstructor)
                     {
                         string courseName = _courseRepository.GetCourse(courseForInstructor.CourseId).Name;
                         courseNamesAsListOfStrings.Add(courseName);
@@ -185,8 +185,8 @@ namespace FitnessApp2.Services
             return assignInstructorsViewModel;
         }
 
-        //retrieve assigned courses for AssignInstructor by id
-        public List<SelectListItem> GetAssignedCoursesAssignInstruc(int Id)
+        //retrieve available courses to be assigned for AssignInstructor by id as <SelectListItem>
+        public List<SelectListItem> GetAvailableCoursesAssignInstruc(int Id)
         {
             //get a list of course that can be assigned to instructor
             List<Course> allCoursesInDb = _courseRepository.GetCourses().ToList();
@@ -219,11 +219,13 @@ namespace FitnessApp2.Services
             return availableCoursesToAssign;
         }
 
-        //check if instructor was assigned to this course
+        //check if instructor was assigned to this course selected by guest in dropdown
         public bool CheckInstructorAssignedToCourse(string courseChosen, int instrucId)
         {
-            bool instructorAssignedToCourse = false;
+            //retrieve chosen cours by guest in dropdown
             Course courseSelected = _courseRepository.GetCourse(Int32.Parse(courseChosen));
+
+            bool instructorAssignedToCourse = false;
             List<CourseInstructor> coursesForInstructor = _courseInstructorRepository.GetCoursesByInstructorId(instrucId).ToList();
             foreach (CourseInstructor course in coursesForInstructor)
             {
@@ -237,7 +239,7 @@ namespace FitnessApp2.Services
         }
 
         //check if instructor has at least 5 hours free to take on one more guest (which can choose between 1...5 hours)
-        public bool CheckInstructorHasFreeHours(int instrucId)
+        public bool CheckInstructorHasFreeHours(int instrucId, byte hoursLimit)
         {
             bool instrucHasFreeHours = false;
             bool instrucHasCourses = _courseInstructorRepository.InstructorHasCourse(instrucId);
@@ -273,7 +275,7 @@ namespace FitnessApp2.Services
                 }
             }
 
-            instrucHasFreeHours = (assignedHoursForInstructor <= (byte)35) ? true : false;
+            instrucHasFreeHours = (assignedHoursForInstructor <= hoursLimit) ? true : false;
 
             return instrucHasFreeHours;
         }
@@ -296,5 +298,156 @@ namespace FitnessApp2.Services
         {
             return _courseInstructorRepository.AssignInstructor(courseInstructor);
         }
+
+
+        //REGISTER GUESTS
+        //retrieve a list with all guests and their courses from repository
+        public ICollection<RegisterGuestViewModel> GetRegisterGuests()
+        {
+            ICollection<Guest> guestsAsList = _guestRepository.GetGuests().ToList();
+            List<RegisterGuestViewModel> registerGuestsViewModel = new List<RegisterGuestViewModel>();
+
+            foreach (Guest guest in guestsAsList)
+            {
+                bool guestHasCourses = _courseGuestRepository.GuestHasCourse(guest.Id);
+                List<string> courseNamesAsListOfStrings = new List<string> { };
+                if (guestHasCourses)
+                {
+                    ICollection<CourseGuest> coursesForGuest = _courseGuestRepository.GetCoursesByGuestId(guest.Id);
+                    foreach (CourseGuest courseForGuest in coursesForGuest)
+                    {
+                        string courseName = _courseRepository.GetCourse(courseForGuest.CourseId).Name;
+                        courseNamesAsListOfStrings.Add(courseName);
+                    }
+                }
+
+                RegisterGuestViewModel registerGuestViewModel = new RegisterGuestViewModel()
+                {
+                    Id = guest.Id,
+                    FirstName = guest.FirstName,
+                    LastName = guest.LastName,
+                    AssignedCourses = (guestHasCourses) ? courseNamesAsListOfStrings : null,
+                };
+                registerGuestsViewModel.Add(registerGuestViewModel);
+            }
+
+            return registerGuestsViewModel;
+        }
+
+        //retrieve available courses to register for RegisterGuest by id as <SelectListItem>
+        public List<SelectListItem> GetAvailableCoursesRegisterGuest(int Id)
+        {
+            List<Course> allCoursesInDb = _courseRepository.GetCourses().ToList();
+            List<CourseGuest> coursesForGuest = _courseGuestRepository.GetCoursesByGuestId(Id).ToList();
+            List<Course> availableCourses = _courseRepository.GetCourses().ToList();
+
+            if (coursesForGuest.Count != 0)
+            {
+                foreach (CourseGuest courseForGuest in coursesForGuest)
+                {
+                    foreach (Course course in allCoursesInDb)
+                    {
+                        if (courseForGuest.CourseId == course.Id)
+                        {
+                            availableCourses.Remove(course);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            List<Course> filteredCourses = (coursesForGuest.Count != 0) ? availableCourses : allCoursesInDb;
+
+            List<SelectListItem> availableCoursesToAssign = new List<SelectListItem>();
+            foreach (Course course in filteredCourses)
+            {
+                availableCoursesToAssign.Add(new SelectListItem { Text = course.Name, Value = course.Id.ToString() });
+            }
+            return availableCoursesToAssign;
+        }
+
+        //get a list of all instructors as <SelectListItem>
+        public List<SelectListItem> GetAllInstructorsRegisterGuest()
+        {
+            List<Instructor> allInstructorsFromDb = _instructorRepository.GetInstructors().ToList();
+            List<SelectListItem> allInstructors = new List<SelectListItem>();
+            foreach (Instructor instruc in allInstructorsFromDb)
+            {
+                allInstructors.Add(new SelectListItem { Text = instruc.FirstName + ' ' + instruc.LastName, Value = instruc.Id.ToString() });
+            }
+            return allInstructors;
+        }
+
+        //check if instructor selected in dropdown was assigned to this course selected in dropdown
+        public bool CheckInstructorAssignedToCourse(string courseChosen, string instrucChosen)
+        {
+            //retrieve chosen instructor by guest in dropdown 
+            Instructor instructorSelected = _instructorRepository.GetInstructor(Int32.Parse(instrucChosen));
+
+            bool instructorAssignedToCourse = CheckInstructorAssignedToCourse(courseChosen, instructorSelected.Id);
+            return instructorAssignedToCourse;
+        }
+
+        //check if guest was already registered to this course selected in dropdown
+        public bool CheckGuestAssignedToCourse(string courseChosen, int guestId)
+        {
+            //retrieve chosen course by guest in dropdown 
+            Course courseSelected = _courseRepository.GetCourse(Int32.Parse(courseChosen));
+
+            bool guestAssignedToCourse = false;
+            List<CourseGuest> coursesOfGuest = _courseGuestRepository.GetCoursesByGuestId(guestId).ToList(); ;
+            foreach (CourseGuest course in coursesOfGuest)
+            {
+                if (course.CourseId == courseSelected.Id)
+                {
+                    guestAssignedToCourse = true;
+                    break;
+                }
+            }
+            return guestAssignedToCourse;
+        }
+
+        //check if guest was already registered to this instructor selected in dropdown
+        public bool CheckGuestAssignedToInstructor(string instrucChosen, int guestId)
+        {
+            //retrieve chosen instructor by guest in dropdown 
+            Instructor instructorSelected = _instructorRepository.GetInstructor(Int32.Parse(instrucChosen));
+
+            bool guestAssignedToInstructor = false;
+            List<InstructorGuest> guestsOfInstructor = _instructorGuestRepository.GetGuestsByInstructorId(instructorSelected.Id).ToList();
+            foreach (InstructorGuest guest in guestsOfInstructor)
+            {
+                if (guest.GuestId == guestId)
+                {
+                    guestAssignedToInstructor = true;
+                    break;
+                }
+            }
+            return guestAssignedToInstructor;
+        }
+
+        //check if instructor has free hours equal at least with the hours demanded by the guest
+        public bool CheckInstructorHasFreeHours(string instrucChosen, byte hoursLimit)
+        {
+            //retrieve chosen instructor by guest in dropdown 
+            Instructor instructorSelected = _instructorRepository.GetInstructor(Int32.Parse(instrucChosen));
+
+            bool instrucHasCourses = CheckInstructorHasFreeHours(instructorSelected.Id, hoursLimit);
+            return instrucHasCourses;
+        }
+
+        //registering a guest to a course
+        public bool RegisterGuest(CourseGuest courseGuest)
+        {
+            return _courseGuestRepository.RegisterGuest(courseGuest);
+        }
+
+        //registering a guest to an instructor
+        public bool RegisterGuest(InstructorGuest instructorGuest)
+        {
+            return _instructorGuestRepository.RegisterGuest(instructorGuest);
+        }
+
+
     }
 }

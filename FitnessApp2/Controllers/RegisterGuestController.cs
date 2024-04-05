@@ -1,6 +1,7 @@
 ﻿using FitnessApp2.Interfaces;
 using FitnessApp2.Models.DbEntities;
 using FitnessApp2.Models.ViewModels;
+using FitnessApp2.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -8,126 +9,55 @@ namespace FitnessApp2.Controllers
 {
     public class RegisterGuestController : Controller
     {
-        private readonly IGuestRepository _guestRepository;
-        private readonly ICourseGuestRepository _courseGuestRepository;
-        private readonly ICourseRepository _courseRepository;
-        private readonly IInstructorRepository _instructorRepository;
-        private readonly ICourseInstructorRepository _courseInstructorRepository;
-        private readonly IInstructorGuestRepository _instructorGuestRepository;
+        private readonly IFitnessServices _fitnessServices;
 
-        public RegisterGuestController(
-            IGuestRepository guestRepository,
-            ICourseGuestRepository courseGuestRepository,
-            ICourseRepository courseRepository,
-            IInstructorRepository instructorRepository,
-            ICourseInstructorRepository courseInstructorRepository,
-            IInstructorGuestRepository instructorGuestRepository
-            )
+        public RegisterGuestController(IFitnessServices fitnessServices)
         {
-            this._guestRepository = guestRepository;
-            this._courseGuestRepository = courseGuestRepository;
-            this._courseRepository = courseRepository;
-            this._instructorRepository = instructorRepository;
-            this._courseInstructorRepository = courseInstructorRepository;
-            this._instructorGuestRepository = instructorGuestRepository;
+            this._fitnessServices = fitnessServices;
         }
 
         //--------------- RETRIEVE ALL GUESTS AND THEIR COURSES ---------------
         [HttpGet]
         public IActionResult GetRegisterGuests()
         {
-            List<Guest> guestsAsList = _guestRepository.GetGuests().ToList();
-            List<RegisterGuestViewModel> registerGuestsViewModel = new List<RegisterGuestViewModel>();
-
-            foreach (Guest guest in guestsAsList)
-            {
-                bool guestHasCourses = _courseGuestRepository.GuestHasCourse(guest.Id);
-                List<string> courseNamesAsListOfStrings = new List<string>();
-                if (guestHasCourses)
-                {
-                    ICollection<CourseGuest> coursesForGuest = _courseGuestRepository.GetCoursesByGuestId(guest.Id);
-                    foreach (var courseForGuest in coursesForGuest)
-                    {
-                        string courseName = _courseRepository.GetCourse(courseForGuest.CourseId).Name;
-                        courseNamesAsListOfStrings.Add(courseName);
-                    }
-                }
-
-                RegisterGuestViewModel registerGuestViewModel = new RegisterGuestViewModel()
-                {
-                    Id = guest.Id,
-                    FirstName = guest.FirstName,
-                    LastName = guest.LastName,
-                    AssignedCourses = (guestHasCourses) ? courseNamesAsListOfStrings : null,
-                };
-                registerGuestsViewModel.Add(registerGuestViewModel);
-            }
+            ICollection<RegisterGuestViewModel> registerGuestsViewModel = _fitnessServices.GetRegisterGuests();
             return View(registerGuestsViewModel);
         }
 
-        //--------------- ASSIGN GUEST TO COURSE ---------------
+        //--------------- REGISTER GUEST TO COURSE ---------------
         [HttpGet]
         public IActionResult EditRegisterGuest(int Id)
         {
-            //get a list of courses that can be assigned to guest
-            List<Course> allCoursesInDb = _courseRepository.GetCourses().ToList();
-            List<CourseGuest> coursesForGuest = _courseGuestRepository.GetCoursesByGuestId(Id).ToList();
-            List<Course> availableCourses = _courseRepository.GetCourses().ToList();
+            //get a list of courses that can be assigned to guest <SelectListItem>
+            List<SelectListItem> availableCoursesToAssign = _fitnessServices.GetAvailableCoursesRegisterGuest(Id);
 
-            if (coursesForGuest.Count != 0)
-            {
-                foreach (CourseGuest courseForGuest in coursesForGuest)
-                {
-                    foreach (Course course in allCoursesInDb)
-                    {
-                        if (courseForGuest.CourseId == course.Id)
-                        {
-                            availableCourses.Remove(course);
-                            break;
-                        }
-                    }
-                }
-            }
-
-            List<Course> filteredCourses = (coursesForGuest.Count != 0) ? availableCourses : allCoursesInDb;
-
-            List<SelectListItem> availableCoursesToAssign = new List<SelectListItem>();
-            foreach (Course course in filteredCourses)
-            {
-                availableCoursesToAssign.Add(new SelectListItem { Text = course.Name, Value = course.Id.ToString() });
-            }
-
-            //get a list of all instructors
-            List<Instructor> allInstructorsFromDb = _instructorRepository.GetInstructors().ToList();
-            List<SelectListItem> allInstructors = new List<SelectListItem>();
-            foreach (Instructor instruc in allInstructorsFromDb)
-            {
-                allInstructors.Add(new SelectListItem { Text = instruc.FirstName + ' ' + instruc.LastName, Value = instruc.Id.ToString() });
-            }
+            //get a list of all instructors as <SelectListItem>
+            List<SelectListItem> allInstructors = _fitnessServices.GetAllInstructorsRegisterGuest();
 
 
             //retrieve guest info from db and prepare RegisterGuestViewModel for POST below
             try
             {
-                Guest guest = _guestRepository.GetGuest(Id);
-                if (guest != null)
-                {
-                    RegisterGuestViewModel registerGuestViewModel = new RegisterGuestViewModel()
-                    {
-                        Id = guest.Id,
-                        FirstName = guest.FirstName,
-                        LastName = guest.LastName,
-                        Hours = guest.Hours,
-                        AvailableCoursesToAssign = availableCoursesToAssign, //list of strings
-                        AllInstructors = allInstructors //list of strings (fName + ' ' + lName)
-                    };
-                    return View(registerGuestViewModel);
-                }
-                else
+                //check if guest with id exists in db
+                bool guestExists = _fitnessServices.GuestExists(Id);
+                if (!guestExists)
                 {
                     TempData["errorMessage"] = $"Guest with the GuestID: {Id} is not found.";
                     return RedirectToAction("GetRegisterGuests", "RegisterGuest");
                 }
+
+                //convert and send instructor to POST method
+                Guest guest = _fitnessServices.GetGuest(Id);
+                RegisterGuestViewModel registerGuestViewModel = new RegisterGuestViewModel()
+                {
+                    Id = guest.Id,
+                    FirstName = guest.FirstName,
+                    LastName = guest.LastName,
+                    Hours = guest.Hours,
+                    AvailableCoursesToAssign = availableCoursesToAssign, //list of strings
+                    AllInstructors = allInstructors //list of strings (fName + ' ' + lName)
+                };
+                return View(registerGuestViewModel);
             }
             catch (Exception ex)
             {
@@ -141,140 +71,76 @@ namespace FitnessApp2.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
+                //check model
+                if (!ModelState.IsValid)
                 {
-                    //check if instructor was assigned to this course
-                    bool instructorAssignedToCourse = false;
-                    Course courseSelected = _courseRepository.GetCourse(Int32.Parse(registerGuestViewModel.CourseSelected));
-                    Instructor instructorSelected = _instructorRepository.GetInstructor(Int32.Parse(registerGuestViewModel.InstructorSelected));
-                    List<CourseInstructor> coursesForInstructor = _courseInstructorRepository.GetCoursesByInstructorId(instructorSelected.Id).ToList();
-                    foreach (CourseInstructor course in coursesForInstructor)
-                    {
-                        if (course.CourseId == courseSelected.Id)
-                        {
-                            instructorAssignedToCourse = true;
-                            break;
-                        }
-                    }
+                    TempData["errorMessage"] = "Model data is not valid.";
+                    return View("EditRegisterGuest", registerGuestViewModel);
+                }
 
-                    if (instructorAssignedToCourse)
-                    {
-                        //check if guest was already assigned to this course and to this instructor
-                        bool guestAlreadyAssignedToCourse = false;
-                        List<CourseGuest> coursesOfGuest = _courseGuestRepository.GetCoursesByGuestId(registerGuestViewModel.Id).ToList();
-                        foreach (CourseGuest course in coursesOfGuest)
-                        {
-                            if (course.CourseId == courseSelected.Id)
-                            {
-                                guestAlreadyAssignedToCourse = true;
-                                break;
-                            }
-                        }
+                //check if instructor selected in dropdown was assigned to this course selected in dropdown
+                bool instructorAssignedToCourse = _fitnessServices.CheckInstructorAssignedToCourse(registerGuestViewModel.CourseSelected, registerGuestViewModel.InstructorSelected); ;
+                if (!instructorAssignedToCourse)
+                {
+                    TempData["errorMessage"] = "Chosen Instructor is not assigned to this course.";
+                    return View("EditRegisterGuest", registerGuestViewModel);
+                }
 
-                        bool guestAlreadyAssignedToInstructor = false;
-                        List<InstructorGuest> guestsOfInstructor = _instructorGuestRepository.GetGuestsByInstructorId(instructorSelected.Id).ToList();
-                        foreach (InstructorGuest guest in guestsOfInstructor)
-                        {
-                            if (guest.GuestId == registerGuestViewModel.Id)
-                            {
-                                guestAlreadyAssignedToInstructor = true;
-                                break;
-                            }
-                        }
+                //check if guest was already registered to this course selected in dropdown
+                //check if guest was already registered to this instructor selected in dropdown
+                bool guestAssignedToCourse = _fitnessServices.CheckGuestAssignedToCourse(registerGuestViewModel.CourseSelected, registerGuestViewModel.Id);
+                bool guestAssignedToInstructor = _fitnessServices.CheckGuestAssignedToInstructor(registerGuestViewModel.InstructorSelected, registerGuestViewModel.Id);
+                if (guestAssignedToCourse && guestAssignedToInstructor)
+                {
+                    TempData["errorMessage"] = "Guest is already assigned to this course.";
+                    return View("EditRegisterGuest", registerGuestViewModel);
+                }
 
-                        if (!(guestAlreadyAssignedToCourse && guestAlreadyAssignedToInstructor))
-                        {
-                            //check if instructor has free hours equal to the hours demanded by the guest
-                            //same logic to find out hours already reserved for instructor chosen - like in Controller AssignInstructor
-                            bool instrucHasFreeHours = false;
-                            bool instrucHasCourses = _courseInstructorRepository.InstructorHasCourse(instructorSelected.Id);
-                            byte assignedHoursForInstructor = (byte)0; //initialize instructor assigned hours from all guests
+                //check if instructor has free hours equal at least with the hours demanded by the guest
+                //************************************* AICI AM RAMAS********************
+                //in Services la CheckInstruHasFreeHours sa scot din el si sa faca CalculateInstructorFreeHours
+                //si apoi alta metoda: CheckInstructorFreeHours <<-- la Assign Instructor
+                //si apoi alta metoda: CheckInstructorFreeHours <<-- la Register Guest 
+                // pt ca au formule diferite:
+                // instrucHasFreeHours = (assignedHoursForInstructor <= (byte)35) ? true : false;
+                // instrucHasFreeHours = (assignedHoursForInstructor + registerGuestViewModel.Hours <= (byte)40) ? true : false;
+                bool instrucHasFreeHours = _fitnessServices.CheckInstructorHasFreeHours(registerGuestViewModel.InstructorSelected, (byte)40);
+                if (!instrucHasFreeHours)
+                {
+                    TempData["errorMessage"] = "Instructor does not have enough free hours to take the guest.";
+                    return View("EditRegisterGuest", registerGuestViewModel);
+                }
 
-                            if (instrucHasCourses)
-                            {
-                                foreach (CourseInstructor courseForInstructor in coursesForInstructor)
-                                {
-                                    Course currentCourse = new Course();
-                                    currentCourse = _courseRepository.GetCourse(courseForInstructor.CourseId);
+                //retrieve the selected course and selected instructor by guest in dropdown (by its name parsed to id)
+                Course courseSelected = _fitnessServices.GetCourse(Int32.Parse(registerGuestViewModel.CourseSelected));
+                Instructor instructorSelected = _fitnessServices.GetInstructor(Int32.Parse(registerGuestViewModel.InstructorSelected));
 
-                                    bool courseHasGuests = _courseGuestRepository.CourseHasGuests(courseForInstructor.CourseId);
+                //create link in db guest<->course and guest<->instructor, create and save CourseGuest and InstructorGuest to db context
+                CourseGuest courseGuest = new CourseGuest()
+                {
+                    CourseId = courseSelected.Id,
+                    GuestId = registerGuestViewModel.Id
+                };
 
-                                    if (courseHasGuests)
-                                    {
-                                        ICollection<CourseGuest> guestsForCourse = _courseGuestRepository.GetGuestsByCourseId(courseForInstructor.CourseId);
-                                        ICollection<InstructorGuest> guestsForInstructor = _instructorGuestRepository.GetGuestsByInstructorId(instructorSelected.Id);
-                                        foreach (CourseGuest guestForCourse in guestsForCourse)
-                                        {
-                                            foreach (InstructorGuest guestForInstructor in guestsForInstructor)
-                                            {
-                                                if (guestForInstructor.GuestId == guestForCourse.GuestId)
-                                                {
-                                                    Guest currentGuest = _guestRepository.GetGuest(guestForCourse.GuestId);
-                                                    assignedHoursForInstructor += currentGuest.Hours; //add hours of each guestOfInstructor to his instructor
-                                                }
-                                            }
+                InstructorGuest instructorGuest = new InstructorGuest()
+                {
+                    InstructorId = instructorSelected.Id,
+                    GuestId = registerGuestViewModel.Id
+                };
 
-                                        }
-                                    }
-                                }
-                            }
-
-                            instrucHasFreeHours = (assignedHoursForInstructor + registerGuestViewModel.Hours <= (byte)40) ? true : false;
-
-                            if (instrucHasFreeHours)
-                            {
-                                //for assigning guest to the course
-                                CourseGuest courseGuest = new CourseGuest()
-                                {
-                                    CourseId = courseSelected.Id,
-                                    GuestId = registerGuestViewModel.Id
-                                };
-
-                                //for assigning guest to the instructor
-                                InstructorGuest instructorGuest = new InstructorGuest()
-                                {
-                                    InstructorId = instructorSelected.Id,
-                                    GuestId = registerGuestViewModel.Id
-                                };
-
-                                bool statusAssignGuestToCourseInDb = _courseGuestRepository.AssignGuest(courseGuest);
-                                bool statusAssignGuestToInstructorInDb = _instructorGuestRepository.LinkInstructorAndGuest(instructorGuest);
-                                if (statusAssignGuestToCourseInDb && statusAssignGuestToInstructorInDb)
-                                {
-                                    TempData["successMessage"] = "Guest assigned successfully!";
-                                    return RedirectToAction("GetRegisterGuests", "RegisterGuest");
-                                }
-                                else
-                                {
-                                    TempData["errorMessage"] = $"Something went wrong when saving to database. Guest assigned to course has status {statusAssignGuestToCourseInDb} and guest linked to instructor has status {statusAssignGuestToInstructorInDb}";
-                                    return RedirectToAction("GetRegisterGuests", "RegisterGuest");
-                                }
-                            }
-                            else
-                            {
-                                TempData["errorMessage"] = "Instructor does not have enough free hours to take the guest.";
-                                return View("EditRegisterGuest", registerGuestViewModel);
-                            }
-
-                            
-                        }
-                        else
-                        {
-                            TempData["errorMessage"] = "Guest is already assigned to this course.";
-                            return View(registerGuestViewModel);
-                        }
-                    }
-                    else
-                    {
-                        TempData["errorMessage"] = "Chosen Instructor is not assigned to this course.";
-                        return View(registerGuestViewModel);
-                    }
+                bool statusRegisterGuestToCourseInDb = _fitnessServices.RegisterGuest(courseGuest);
+                bool statusRegisterGuestToInstructorInDb = _fitnessServices.RegisterGuest(instructorGuest);
+                if (statusRegisterGuestToCourseInDb && statusRegisterGuestToInstructorInDb)
+                {
+                    TempData["successMessage"] = "Guest registered successfully!";
+                    return RedirectToAction("GetRegisterGuests", "RegisterGuest");
                 }
                 else
                 {
-                    TempData["errorMessage"] = "Model data is not valid.";
-                    return View(registerGuestViewModel);
-                }
+                    TempData["errorMessage"] = $"Something went wrong when saving to database. Guest registered to course has status {statusRegisterGuestToCourseInDb} and guest registered to instructor has status {statusRegisterGuestToInstructorInDb}";
+                    return RedirectToAction("GetRegisterGuests", "RegisterGuest");
+                } 
+                
             }
             catch (Exception ex)
             {

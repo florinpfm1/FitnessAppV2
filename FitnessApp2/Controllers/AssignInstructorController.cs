@@ -31,7 +31,7 @@ namespace FitnessApp2.Controllers
         public IActionResult EditAssignInstructor(int Id)
         {
             //get a list of course that can be assigned to instructor
-            List<SelectListItem> availableCoursesToAssign = _fitnessServices.GetAssignedCoursesAssignInstruc(Id);
+            List<SelectListItem> availableCoursesToAssign = _fitnessServices.GetAvailableCoursesAssignInstruc(Id);
 
             //retrieve instructor info from db and prepare AssignInstructorViewModel for POST below
             try
@@ -76,7 +76,7 @@ namespace FitnessApp2.Controllers
                     return View(assignInstructorViewModel);
                 }
 
-                //check if instructor was assigned to this course
+                //check if instructor was assigned to this course selected by guest in dropdown
                 bool instructorAssignedToCourse = _fitnessServices.CheckInstructorAssignedToCourse(assignInstructorViewModel.CourseSelected, assignInstructorViewModel.Id);
                 if (instructorAssignedToCourse)
                 {
@@ -85,7 +85,7 @@ namespace FitnessApp2.Controllers
                 }
 
                 //check if instructor has at least 5 hours free to take on one more guest (which can choose between 1...5 hours)
-                bool instrucHasFreeHours = _fitnessServices.CheckInstructorHasFreeHours(assignInstructorViewModel.Id);
+                bool instrucHasFreeHours = _fitnessServices.CheckInstructorHasFreeHours(assignInstructorViewModel.Id, (byte)35);
                 if (!instrucHasFreeHours) 
                 {
                     TempData["errorMessage"] = "Instructor does not have free hours to start a new course.";

@@ -36,7 +36,7 @@ namespace FitnessApp2.Repository
         }
 
         //assign a guest to an instructor
-        public bool LinkInstructorAndGuest(InstructorGuest instructorGuest)
+        public bool RegisterGuest(InstructorGuest instructorGuest)
         {
             _context.Add(instructorGuest);
             return Save();

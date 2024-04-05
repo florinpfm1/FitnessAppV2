@@ -41,7 +41,7 @@ namespace FitnessApp2.Repository
         }
 
         //assign a guest to a course
-        public bool AssignGuest(CourseGuest courseGuest)
+        public bool RegisterGuest(CourseGuest courseGuest)
         {
             _context.Add(courseGuest);
             return Save();

@@ -12,7 +12,7 @@ namespace FitnessApp2.Interfaces
         bool GuestHasCourse(int instrucId);
 
         //creating, updating
-        bool AssignGuest(CourseGuest courseGuest);
-        bool Save();
+        bool RegisterGuest(CourseGuest courseGuest);
+       
     }
 }

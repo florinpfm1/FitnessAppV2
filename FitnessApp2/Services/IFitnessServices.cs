@@ -69,12 +69,12 @@ namespace FitnessApp2.Services
         //ASSIGN INSTRUCTORS
         //retrieve a list with all instructors and their courses from repository
         public ICollection<AssignInstructorViewModel> GetAssignInstructors();
-        //retrieve assigned courses for AssignInstructor by id
-        public List<SelectListItem> GetAssignedCoursesAssignInstruc(int Id);
-        //check if instructor was assigned to this course
+        //retrieve available courses to be assigned for AssignInstructor by id as <SelectListItem>
+        public List<SelectListItem> GetAvailableCoursesAssignInstruc(int Id);
+        //check if instructor was assigned to this course selected by guest in dropdown
         public bool CheckInstructorAssignedToCourse(string courseChosen, int instrucId);
         //check if instructor has at least 5 hours free to take on one more guest (which can choose between 1...5 hours)
-        public bool CheckInstructorHasFreeHours(int instrucId);
+        public bool CheckInstructorHasFreeHours(int instrucId, byte hoursLimit);
         //get one course by Id
         public Course GetCourse(int id);
         //get one course by Name
@@ -83,5 +83,28 @@ namespace FitnessApp2.Services
 
         //assigning an instructor to a course
         public bool AssignInstructor(CourseInstructor courseInstructor);
+
+
+        //REGISTER GUESTS
+        //retrieve a list with all guests and their courses from repository as <SelectListItem>
+        public ICollection<RegisterGuestViewModel> GetRegisterGuests();
+        //retrieve available courses to register for RegisterGuest by id as <SelectListItem>
+        public List<SelectListItem> GetAvailableCoursesRegisterGuest(int Id);
+        //get a list of all instructors as <SelectListItem>
+        public List<SelectListItem> GetAllInstructorsRegisterGuest();
+        //check if instructor selected in dropdown was assigned to this course selected in dropdown
+        public bool CheckInstructorAssignedToCourse(string courseChosen, string instrucChosen);
+        //check if guest was already registered to this course selected in dropdown
+        public bool CheckGuestAssignedToCourse(string courseChosen, int guestId);
+        //check if guest was already registered to this instructor selected in dropdown
+        public bool CheckGuestAssignedToInstructor(string instrucChosen, int guestId);
+        //check if instructor has free hours equal at least with the hours demanded by the guest
+        public bool CheckInstructorHasFreeHours(string instrucChosen, byte hoursLimit);
+
+
+        //registering a guest to a course
+        public bool RegisterGuest(CourseGuest courseGuest);
+        //registering a guest to an instructor
+        public bool RegisterGuest(InstructorGuest instructorGuest);
     }
 }
