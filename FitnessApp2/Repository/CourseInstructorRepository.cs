@@ -45,23 +45,17 @@ namespace FitnessApp2.Repository
         }
 
 
-        //assign a instructor to a course
+        //assign an instructor to a course
         public bool AssignInstructor(CourseInstructor courseInstructor)
         {
-            //change tracker
-            //add, updating, modifying
-            //connected vs disconnected   (90% we will work in connected state)
-            //EntityState.Added = ...     (is a disconnected state)
             _context.Add(courseInstructor);
             return Save();
         }
 
         public bool Save()
         {
-            var saved = _context.SaveChanges(); //SaveChanges() returns an integer ; is the equivalent of _context.SaveChanges() put inside the CreateInstructor(...) method
+            var saved = _context.SaveChanges();
             return saved > 0 ? true : false;
-
-            //when we call SaveChanges() then Entity framework will take all we placed in _context, convert it into SQL and send it to db
         }
     }
 }

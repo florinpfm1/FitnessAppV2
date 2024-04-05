@@ -1,4 +1,6 @@
 ﻿using FitnessApp2.Models.DbEntities;
+using FitnessApp2.Models.ViewModels;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FitnessApp2.Services
 {
@@ -62,5 +64,24 @@ namespace FitnessApp2.Services
 
         //deleteing an existing instructor
         public bool DeleteGuest(Guest guest);
+
+
+        //ASSIGN INSTRUCTORS
+        //retrieve a list with all instructors and their courses from repository
+        public ICollection<AssignInstructorViewModel> GetAssignInstructors();
+        //retrieve assigned courses for AssignInstructor by id
+        public List<SelectListItem> GetAssignedCoursesAssignInstruc(int Id);
+        //check if instructor was assigned to this course
+        public bool CheckInstructorAssignedToCourse(string courseChosen, int instrucId);
+        //check if instructor has at least 5 hours free to take on one more guest (which can choose between 1...5 hours)
+        public bool CheckInstructorHasFreeHours(int instrucId);
+        //get one course by Id
+        public Course GetCourse(int id);
+        //get one course by Name
+        public Course GetCourse(string name);
+
+
+        //assigning an instructor to a course
+        public bool AssignInstructor(CourseInstructor courseInstructor);
     }
 }

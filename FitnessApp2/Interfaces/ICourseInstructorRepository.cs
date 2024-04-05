@@ -11,8 +11,8 @@ namespace FitnessApp2.Interfaces
         bool CourseHasInstructor(int courseId);
         bool InstructorHasCourse(int instrucId);
 
-        //creating, updating
+        //assign an instructor to a course
         bool AssignInstructor(CourseInstructor courseInstructor);
-        bool Save();
+        
     }
 }
