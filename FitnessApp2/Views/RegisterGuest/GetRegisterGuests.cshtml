@@ -1,7 +1,6 @@
-﻿@model List<FitnessApp2.Models.ViewModels.InstructorWithCoursesViewModel>  //aici specificam Modelul primit de unde sa il ia
-
+﻿@model List<FitnessApp2.Models.ViewModels.RegisterGuestViewModel>
 @{
-    ViewData["Title"] = "Assign Instructors";   //aici e numele de View
+    ViewData["Title"] = "Register Guests";
     var successMessage = TempData["successMessage"]?.ToString();
     var errorMessage = TempData["errorMessage"]?.ToString();
 }
@@ -23,6 +22,7 @@ else if (!string.IsNullOrWhiteSpace(errorMessage))
         <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
+
 <form>
     <table class="table table-responsive table-hover">
         <thead>
@@ -37,28 +37,28 @@ else if (!string.IsNullOrWhiteSpace(errorMessage))
         <tbody>
             @if (Model != null && Model.Any())
             {
-                @foreach (var instructorWithCourses in Model)  //aici Model reprezinta ce apare sus cu ICollection<FitnessApp2.Models.DbEntities.Instructor> deci e o lista ICollection de obiecte instructor
+                @foreach (var registerGuest in Model)
                 {
                     <tr>
-                        <td class="text-center">@instructorWithCourses.Id</td> @*aici @instructor ma folosesc de variabila instructor din foreach, ii pot accesa proprietatile cu . *@
-                        <td class="text-center">@instructorWithCourses.FirstName</td>
-                        <td class="text-center">@instructorWithCourses.LastName</td>
+                        <td class="text-center">@registerGuest.Id</td>
+                        <td class="text-center">@registerGuest.FirstName</td>
+                        <td class="text-center">@registerGuest.LastName</td>
                         <td class="text-center">
-                            @if (instructorWithCourses.AssignedCourses is not null)
+                            @if (registerGuest.AssignedCourses is not null)
                             {
-                                @foreach (var courseName in instructorWithCourses.AssignedCourses)
+                                @foreach (var courseName in registerGuest.AssignedCourses)
                                 {
                                     <div>@courseName</div>
                                 }
                             }
                             else
                             {
-                                <div>No Courses were assigned to instructor.</div>
+                                <div>No Courses were assigned to guest.</div>
                             }
                         </td>
                         <td class="text-center">
                             <div class="btn-group btn-group-sm">
-                                <a asp-controller="AssignInstructor" asp-action="AssignInstructor" asp-route-id="@instructorWithCourses.Id" class="btn btn-primary">Assign Instructor</a>
+                                <a asp-controller="RegisterGuest" asp-action="EditRegisterGuest" asp-route-id="@registerGuest.Id" class="btn btn-primary">Register Guest To Course</a>
                             </div>
                         </td>
                     </tr>
@@ -69,7 +69,7 @@ else if (!string.IsNullOrWhiteSpace(errorMessage))
                 <tr>
                     <td colspan="6">
                         <div>
-                            No Instructors have been created yet!
+                            No Guests have been created yet!
                         </div>
                     </td>
                 </tr>
@@ -77,3 +77,4 @@ else if (!string.IsNullOrWhiteSpace(errorMessage))
         </tbody>
     </table>
 </form>
+

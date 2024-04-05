@@ -37,7 +37,7 @@ namespace FitnessApp2.Repository
             return _context.Guests.Where(g => g.Id == id).FirstOrDefault();
         }
 
-        //get a List of guests by FirstName and LastName
+        //get one guest by FirstName and LastName
         public Guest GetGuest(string firstName, string lastName)
         {
             return _context.Guests.Where(g => g.FirstName == firstName && g.LastName == lastName).FirstOrDefault();
@@ -61,7 +61,6 @@ namespace FitnessApp2.Repository
         }
 
         //creating a new guest
-
         public bool CreateGuest(Guest guest)
         {
             _context.Add(guest);
@@ -72,6 +71,20 @@ namespace FitnessApp2.Repository
         {
             var saved = _context.SaveChanges();
             return saved > 0 ? true : false;
+        }
+
+        //updating an existing guest
+        public bool UpdateGuest(Guest guest)
+        {
+            _context.Update(guest);
+            return Save();
+        }
+
+        //deleting an existing guest
+        public bool DeleteGuest(Guest guest)
+        {
+            _context.Remove(guest);
+            return Save();
         }
     }
 }

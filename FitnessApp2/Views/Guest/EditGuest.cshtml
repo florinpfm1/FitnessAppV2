@@ -1,7 +1,7 @@
 ﻿@model FitnessApp2.Models.ViewModels.GuestViewModel
 
 @{
-    ViewData["Title"] = "Create Guest";
+    ViewData["Title"] = "Edit Guest";
     var errorMessage = TempData["errorMessage"]?.ToString();
 }
 
@@ -16,7 +16,11 @@
     </div>
 
 }
-<form asp-controller="Guest" asp-action="CreateGuest" method="post">
+<form asp-controller="Guest" asp-action="EditGuest" method="post">
+    <div class="mb-3">
+        <label class="form-label">Id</label>
+        <input type="text" class="form-control" asp-for="Id" readonly />
+    </div>
     <div class="mb-3">
         <label class="form-label">First Name</label>
         <input type="text" class="form-control" asp-for="FirstName" />
@@ -32,20 +36,20 @@
         <input type="date" class="form-control" asp-for="AddedDate" />
         <span asp-validation-for="AddedDate" class="text-danger"></span>
     </div>
-
     <div class="mb-3">
         <label class="form-label">Hours</label>
         <input type="text" class="form-control" asp-for="Hours" />
         <span asp-validation-for="Hours" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label class="form-label">Section Name</label>
+        <label class="form-label">SectionName</label>
         <input type="text" class="form-control" asp-for="SectionName" />
         <span asp-validation-for="SectionName" class="text-danger"></span>
     </div>
     <div class="d-grid">
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-success">Update</button>
     </div>
+
 </form>
 <!-- *********** CLIENT SIDE VALIDATION *************** -->
 <!-- aici facem legatura cu scripturi de client side validation pt instructor data care vine de la forms din webpage fields -->

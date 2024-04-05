@@ -1,0 +1,47 @@
+﻿@model FitnessApp2.Models.ViewModels.GuestViewModel
+
+@{
+    ViewData["Title"] = "Delete Guest";
+    var errorMessage = TempData["errorMessage"]?.ToString();
+}
+
+<h3>@ViewData["Title"]</h3>
+<hr />
+<!-- *********** SERVER SIDE VALIDATION *************** -->
+@if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-danger">
+        <strong>Error! </strong>@errorMessage
+        <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+}
+<form asp-controller="Guest" asp-action="DeleteGuest" method="post">
+    <div class="mb-3">
+        <label class="form-label">Id</label>
+        <input type="text" class="form-control" asp-for="Id" readonly />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">First Name</label>
+        <input type="text" class="form-control" asp-for="FirstName" readonly />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Last Name</label>
+        <input type="text" class="form-control" asp-for="LastName" readonly />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Date Added</label>
+        <input type="date" class="form-control" asp-for="AddedDate" readonly />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Hours</label>
+        <input type="text" class="form-control" asp-for="Hours" readonly />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">SectionName</label>
+        <input type="text" class="form-control" asp-for="SectionName" readonly />
+    </div>
+    <div class="d-grid">
+        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete guest with ID: @Model.Id ?')">Delete</button>
+    </div>
+</form>

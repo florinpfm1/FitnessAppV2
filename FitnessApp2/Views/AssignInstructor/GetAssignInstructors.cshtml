@@ -1,7 +1,7 @@
-﻿@model List<FitnessApp2.Models.ViewModels.GuestViewModel>
+﻿@model List<FitnessApp2.Models.ViewModels.AssignInstructorViewModel>  //aici specificam Modelul primit de unde sa il ia
 
 @{
-    ViewData["Title"] = "Guests";   //aici e numele de View
+    ViewData["Title"] = "Assign Instructors";   //aici e numele de View
     var successMessage = TempData["successMessage"]?.ToString();
     var errorMessage = TempData["errorMessage"]?.ToString();
 }
@@ -15,7 +15,6 @@
         <strong>Success! </strong>@successMessage
         <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-
 }
 else if (!string.IsNullOrWhiteSpace(errorMessage))
 {
@@ -23,40 +22,43 @@ else if (!string.IsNullOrWhiteSpace(errorMessage))
         <strong>Error! </strong>@errorMessage
         <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-
 }
 <form>
-    <button asp-action="CreateGuest" asp-controller="Guest" class="btn btn-primary">Create Guest</button>
     <table class="table table-responsive table-hover">
         <thead>
             <tr class="table-active">
                 <th class="text-center">Id</th>
                 <th class="text-center">FirstName</th>
                 <th class="text-center">LastName</th>
-                <th class="text-center">AddedDate</th>
-                <th class="text-center">Hours</th>
-                <th class="text-center">Section</th>
+                <th class="text-center">AssignedCourses</th>
                 <th class="text-center">Action Buttons</th>
             </tr>
         </thead>
         <tbody>
             @if (Model != null && Model.Any())
             {
-                @foreach (var guest in Model)
+                @foreach (var assignInstructor in Model)  //aici Model reprezinta ce apare sus cu ICollection<FitnessApp2.Models.DbEntities.Instructor> deci e o lista ICollection de obiecte instructor
                 {
                     <tr>
-                        <td class="text-center">@guest.Id</td>
-                        <td class="text-center">@guest.FirstName</td>
-                        <td class="text-center">@guest.LastName</td>
-                        <td class="text-center">@guest.AddedDate.ToString()</td>
-                        <td class="text-center">@guest.Hours</td>
-                        <td class="text-center">@guest.SectionName</td>
+                        <td class="text-center">@assignInstructor.Id</td> @*aici @instructor ma folosesc de variabila instructor din foreach, ii pot accesa proprietatile cu . *@
+                        <td class="text-center">@assignInstructor.FirstName</td>
+                        <td class="text-center">@assignInstructor.LastName</td>
+                        <td class="text-center">
+                            @if (assignInstructor.AssignedCourses is not null)
+                            {
+                                @foreach (var courseName in assignInstructor.AssignedCourses)
+                                {
+                                    <div>@courseName</div>
+                                }
+                            }
+                            else
+                            {
+                                <div>No Courses were assigned to instructor.</div>
+                            }
+                        </td>
                         <td class="text-center">
                             <div class="btn-group btn-group-sm">
-                                <a asp-controller="Guest" asp-action="EditGuest" asp-route-id="@guest.Id" class="btn btn-primary">Edit</a>
-                            </div>
-                            <div class="btn-group btn-group-sm">
-                                <a asp-controller="Guest" asp-action="DeleteGuest" asp-route-id="@guest.Id" class="btn btn-danger">Delete</a>
+                                <a asp-controller="AssignInstructor" asp-action="EditAssignInstructor" asp-route-id="@assignInstructor.Id" class="btn btn-primary">Assign Instructor</a>
                             </div>
                         </td>
                     </tr>
@@ -67,14 +69,11 @@ else if (!string.IsNullOrWhiteSpace(errorMessage))
                 <tr>
                     <td colspan="6">
                         <div>
-                            No Guests were added to any course yet!
+                            No Instructors have been created yet!
                         </div>
                     </td>
                 </tr>
             }
-
-
         </tbody>
     </table>
 </form>
-

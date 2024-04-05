@@ -20,13 +20,18 @@ namespace FitnessApp2.Repository
 
         public ICollection<CourseInstructor> GetCoursesNotAssignedToInstructorId(int instrucId)
         {
-            ICollection<CourseInstructor> aaa = _context.CourseInstructors.Where(c => c.InstructorId != instrucId).ToList();
-            return aaa.DistinctBy(c => c.CourseId).ToList();
+            ICollection<CourseInstructor> collection = _context.CourseInstructors.Where(c => c.InstructorId != instrucId).ToList();
+            return collection.DistinctBy(c => c.CourseId).ToList();
         }
 
         public ICollection<CourseInstructor> GetInstructorsByCourseId(int courseId)
         {
             return _context.CourseInstructors.Where(i => i.CourseId == courseId).ToList();
+        }
+
+        public CourseInstructor GetInstrucWithIdHasCourseWithId(int instrucId, int courseId)
+        {
+            return _context.CourseInstructors.Where(i => i.InstructorId == instrucId && i.CourseId == courseId).FirstOrDefault();
         }
 
         public bool CourseHasInstructor(int courseId)

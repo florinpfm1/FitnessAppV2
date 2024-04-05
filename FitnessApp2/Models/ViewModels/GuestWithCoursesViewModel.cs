@@ -1,9 +1,8 @@
-﻿using FitnessApp2.Models.DbEntities;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace FitnessApp2.Models.ViewModels
 {
-    public class InstructorWithCoursesViewModel
+    public class GuestWithCoursesViewModel
     {
         public int Id { get; set; }
 

@@ -9,5 +9,9 @@ namespace FitnessApp2.Interfaces
 
         bool InstructorHasGuests(int courseId);
         bool GuestHasInstructors(int instrucId);
+
+        //creating, updating
+        public bool LinkInstructorAndGuest(InstructorGuest instructorGuest);
+        bool Save();
     }
 }

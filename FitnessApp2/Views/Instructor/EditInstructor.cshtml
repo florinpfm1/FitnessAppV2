@@ -1,7 +1,7 @@
-﻿@model FitnessApp2.Models.ViewModels.GuestViewModel
+﻿@model FitnessApp2.Models.ViewModels.InstructorViewModel
 
 @{
-    ViewData["Title"] = "Create Guest";
+    ViewData["Title"] = "Edit Instructor";
     var errorMessage = TempData["errorMessage"]?.ToString();
 }
 
@@ -16,7 +16,11 @@
     </div>
 
 }
-<form asp-controller="Guest" asp-action="CreateGuest" method="post">
+<form asp-controller="Instructor" asp-action="EditInstructor" method="post">
+    <div class="mb-3">
+        <label class="form-label">Id</label>
+        <input type="text" class="form-control" asp-for="Id" readonly />
+    </div>
     <div class="mb-3">
         <label class="form-label">First Name</label>
         <input type="text" class="form-control" asp-for="FirstName" />
@@ -32,19 +36,18 @@
         <input type="date" class="form-control" asp-for="AddedDate" />
         <span asp-validation-for="AddedDate" class="text-danger"></span>
     </div>
-
     <div class="mb-3">
-        <label class="form-label">Hours</label>
-        <input type="text" class="form-control" asp-for="Hours" />
-        <span asp-validation-for="Hours" class="text-danger"></span>
+        <label class="form-label">Years Experience</label>
+        <input type="text" class="form-control" asp-for="ExperienceYears" />
+        <span asp-validation-for="ExperienceYears" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label class="form-label">Section Name</label>
-        <input type="text" class="form-control" asp-for="SectionName" />
-        <span asp-validation-for="SectionName" class="text-danger"></span>
+        <label class="form-label">Gender</label>
+        <input type="text" class="form-control" asp-for="Gender" />
+        <span asp-validation-for="Gender" class="text-danger"></span>
     </div>
     <div class="d-grid">
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-success">Update</button>
     </div>
 </form>
 <!-- *********** CLIENT SIDE VALIDATION *************** -->

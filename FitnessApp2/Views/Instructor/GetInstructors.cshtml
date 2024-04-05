@@ -78,10 +78,10 @@ else if (!string.IsNullOrWhiteSpace(errorMessage))
                         </td>
                         <td class="text-center">
                             <div class="btn-group btn-group-sm">
-                                <a asp-controller="Instructor" asp-action="Edit" asp-route-id="@instructor.Id" class="btn btn-primary">Edit</a>
+                                <a asp-controller="Instructor" asp-action="EditInstructor" asp-route-id="@instructor.Id" class="btn btn-primary">Edit</a>
                             </div>
                             <div class="btn-group btn-group-sm">
-                                <a asp-controller="Instructor" asp-action="Delete" asp-route-id="@instructor.Id" class="btn btn-danger">Delete</a>
+                                <a asp-controller="Instructor" asp-action="DeleteInstructor" asp-route-id="@instructor.Id" class="btn btn-danger">Delete</a>
                             </div>
                         </td>
                     </tr>

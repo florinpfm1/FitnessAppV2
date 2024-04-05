@@ -14,9 +14,13 @@ namespace FitnessApp2.Interfaces
         ICollection<Guest> GetGuests(byte hours);
         bool GuestExists(int guestId);
 
-        //creating, updating
+        //creating
         public bool CreateGuest(Guest guest);
-        public bool Save();
 
+        //updating
+        public bool UpdateGuest(Guest guest);
+
+        //deleting
+        public bool DeleteGuest(Guest guest);
     }
 }

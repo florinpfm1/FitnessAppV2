@@ -1,6 +1,7 @@
 using FitnessApp2.Data;
 using FitnessApp2.Interfaces;
 using FitnessApp2.Repository;
+using FitnessApp2.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -29,6 +30,7 @@ namespace FitnessApp2
             builder.Services.AddScoped<ICourseInstructorRepository, CourseInstructorRepository>();
             builder.Services.AddScoped<ICourseGuestRepository, CourseGuestRepository>();
             builder.Services.AddScoped<IInstructorGuestRepository, InstructorGuestRepository>();
+            builder.Services.AddScoped<IFitnessServices, FitnessServices>();
             //to ignore json cycles for many-to-many relationship in SQL tables
             /*
                 builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);

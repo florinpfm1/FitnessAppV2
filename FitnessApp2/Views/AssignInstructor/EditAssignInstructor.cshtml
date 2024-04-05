@@ -1,9 +1,7 @@
-﻿@using FitnessApp2.Models.DbEntities
-@model FitnessApp2.Models.ViewModels.AssignInstructorViewModel
+﻿@model FitnessApp2.Models.ViewModels.AssignInstructorViewModel
 
 @{
     ViewData["Title"] = "Assign Instructor";
-    var availableCoursesToAssign = ViewData["availableCoursesToAssign"] as List<Course>;
     var errorMessage = TempData["errorMessage"]?.ToString();
 }
 
@@ -18,9 +16,9 @@
     </div>
 
 }
-<form action="AssignInstructor" method="post">
+<form asp-controller="AssignInstructor" asp-action="EditAssignInstructor" method="post">
     <div class="mb-3">
-        <label class="form-label">InstructorID</label>
+        <label class="form-label">Id</label>
         <input type="text" class="form-control" asp-for="Id" readonly />
     </div>
     <div class="mb-3">
@@ -34,13 +32,9 @@
         <span asp-validation-for="LastName" class="text-danger"></span>
     </div>
     <div>
-        <label class="form-label">Course Name</label>
-        <select class="form-select" asp-for="CourseName">
-            <option selected>Open this select menu</option>
-            @foreach (var item in availableCoursesToAssign)
-            {
-                <option>@item.Name</option>
-            }
+        <label class="form-label">Select course</label>
+        <select class="form-select" asp-items="Model.AvailableCoursesToAssign" asp-for="CourseSelected">
+            <option value="NOSELECTEDVALUE">-- Open this select menu --</option>
         </select>
     </div>
     <div class="d-grid">

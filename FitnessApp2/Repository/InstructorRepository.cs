@@ -5,9 +5,8 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace FitnessApp2.Repository
 {
-    public class InstructorRepository : IInstructorRepository //repository will inherit from the interface
+    public class InstructorRepository : IInstructorRepository
     {
-        //add data context constructor and property to manipulate all tables from db
         public FAppDbContext _context { get; }
         public InstructorRepository(FAppDbContext context)
         {
@@ -15,21 +14,18 @@ namespace FitnessApp2.Repository
         }
 
         //get a List of all instructors
-        //because we want output an ICollection we need to add the ToList() at the end and be specific of what we should return from the db 
         public ICollection<Instructor> GetInstructors()
         {
             return _context.Instructors.OrderBy(i => i.Id).ToList(); 
         }
 
         //get one instructor by Id
-        //because we want output an object Instructor we need to add FirstOrDefault() at the end and be specific of what we should return from the db
         public Instructor GetInstructor(int id)
         {
             return _context.Instructors.Where(i => i.Id == id).FirstOrDefault();
         }
 
         
-
         //get one instructor by FirstName and LastName
         public Instructor GetInstructor(string firstName, string lastName)
         {
@@ -63,20 +59,28 @@ namespace FitnessApp2.Repository
         //creating a new instructor
         public bool CreateInstructor(Instructor instructor)
         {
-            //change tracker
-            //add, updating, modifying
-            //connected vs disconnected   (90% we will work in connected state)
-            //EntityState.Added = ...     (is a disconnected state)
             _context.Add(instructor);
             return Save();
         }
 
         public bool Save()
         {
-            var saved = _context.SaveChanges(); //SaveChanges() returns an integer ; is the equivalent of _context.SaveChanges() put inside the CreateInstructor(...) method
+            var saved = _context.SaveChanges(); 
             return saved > 0 ? true : false;
+        }
 
-            //when we call SaveChanges() then Entity framework will take all we placed in _context, convert it into SQL and send it to db
+        //updating an existing instructor
+        public bool UpdateInstructor(Instructor instructor)
+        {
+            _context.Update(instructor);
+            return Save();
+        }
+
+        //deleting an existing instructor
+        public bool DeleteInstructor(Instructor instructor)
+        {
+            _context.Remove(instructor);
+            return Save();
         }
     }
 }

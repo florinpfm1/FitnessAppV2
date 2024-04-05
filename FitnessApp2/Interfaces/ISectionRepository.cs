@@ -5,7 +5,7 @@ namespace FitnessApp2.Interfaces
     public interface ISectionRepository
     {
         ICollection<Section> GetSections();
-        Section GetSection(int id);
+        Section GetSection(int? id);
         Section GetSection(string name);
         bool SectionExists(int sectionId);
     }

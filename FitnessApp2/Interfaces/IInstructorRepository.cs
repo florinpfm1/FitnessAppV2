@@ -13,8 +13,13 @@ namespace FitnessApp2.Interfaces
         ICollection<Instructor> GetInstructors(char gender);
         bool InstructorExists(int instrucId);
 
-        //creating, updating
+        //creating
         bool CreateInstructor(Instructor instructor);
-        bool Save();
+
+        //updating
+        bool UpdateInstructor(Instructor instructor);
+
+        //deleting
+        bool DeleteInstructor(Instructor instructor);
     }
 }

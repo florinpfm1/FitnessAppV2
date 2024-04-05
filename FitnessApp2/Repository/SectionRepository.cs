@@ -20,7 +20,7 @@ namespace FitnessApp2.Repository
         }
 
         //get one section by Id
-        public Section GetSection(int id)
+        public Section GetSection(int? id)
         {
             return _context.Sections.Where(s => s.Id == id).FirstOrDefault();
         }
