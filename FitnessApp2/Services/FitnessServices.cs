@@ -63,6 +63,12 @@ namespace FitnessApp2.Services
             return _instructorRepository.InstructorExists(instrucId);
         }
 
+        //check if instructor is assigned to at least one course
+        public bool InstructorHasCourse(int instrucId)
+        {
+            return _courseInstructorRepository.InstructorHasCourse(instrucId);
+        }
+
 
         //creating a new instructor
         public bool CreateInstructor(Instructor instructor)
@@ -132,6 +138,12 @@ namespace FitnessApp2.Services
             return _guestRepository.GuestExists(guestId);
         }
 
+        //check if guest is registered to at least one course
+        public bool GuestHasCourse(int guestId)
+        {
+            return _courseGuestRepository.GuestHasCourse(guestId);
+        }
+
 
         //creating a new guest
         public bool CreateGuest(Guest guest)
@@ -149,6 +161,19 @@ namespace FitnessApp2.Services
         public bool DeleteGuest(Guest guest)
         {
             return _guestRepository.DeleteGuest(guest);
+        }
+
+        //WAITLIST GUESTS
+        //retrieve detail by email and phone
+        public Detail GetDetailByPhoneAndEmail(string email, string phone)
+        {
+            return _detailRepository.GetDetailByPhoneAndEmail(email, phone);
+        }
+
+        //creating a new detail
+        public bool CreateDetail(Detail detail)
+        {
+            return _detailRepository.CreateDetail(detail);
         }
 
         //ASSIGN INSTRUCTORS
@@ -238,10 +263,9 @@ namespace FitnessApp2.Services
             return instructorAssignedToCourse;
         }
 
-        //check if instructor has at least 5 hours free to take on one more guest (which can choose between 1...5 hours)
-        public bool CheckInstructorHasFreeHours(int instrucId, byte hoursLimit)
+        //calculate free hours for instructor
+        public byte CalculateFreeHoursInstructor(int instrucId)
         {
-            bool instrucHasFreeHours = false;
             bool instrucHasCourses = _courseInstructorRepository.InstructorHasCourse(instrucId);
             List<CourseInstructor> coursesForInstructor = _courseInstructorRepository.GetCoursesByInstructorId(instrucId).ToList();
             byte assignedHoursForInstructor = (byte)0; //initialize instructor assigned hours from all guests
@@ -274,9 +298,30 @@ namespace FitnessApp2.Services
                     }
                 }
             }
+            return assignedHoursForInstructor;
+        }
 
-            instrucHasFreeHours = (assignedHoursForInstructor <= hoursLimit) ? true : false;
-
+        //check if instructor has at least 5 hours free to take on one more course with at least 1...5 guests (which can choose between 1...5 hours)
+        //check if instructor has free hours equal at least with the hours demanded by the new registered guest
+        public bool CheckInstructorHasFreeHours(int instrucId, byte hoursLimit, string forAction, byte? guestHours)
+        {
+            bool instrucHasFreeHours = false;
+            byte assignedHoursForInstructor = CalculateFreeHoursInstructor(instrucId);
+            switch (forAction)
+            {
+                case "forAssignInstructor":
+                    instrucHasFreeHours = (assignedHoursForInstructor <= hoursLimit) ? true : false;
+                    break;
+                case "forRegisterGuest":
+                    instrucHasFreeHours = (assignedHoursForInstructor + guestHours <= hoursLimit) ? true : false;
+                    break;
+                case "forWaitlistGuest":
+                    instrucHasFreeHours = (assignedHoursForInstructor <= hoursLimit) ? true : false;
+                    break;
+                default:
+                    instrucHasFreeHours = false;
+                    break;
+            }
             return instrucHasFreeHours;
         }
 
@@ -426,15 +471,6 @@ namespace FitnessApp2.Services
             return guestAssignedToInstructor;
         }
 
-        //check if instructor has free hours equal at least with the hours demanded by the guest
-        public bool CheckInstructorHasFreeHours(string instrucChosen, byte hoursLimit)
-        {
-            //retrieve chosen instructor by guest in dropdown 
-            Instructor instructorSelected = _instructorRepository.GetInstructor(Int32.Parse(instrucChosen));
-
-            bool instrucHasCourses = CheckInstructorHasFreeHours(instructorSelected.Id, hoursLimit);
-            return instrucHasCourses;
-        }
 
         //registering a guest to a course
         public bool RegisterGuest(CourseGuest courseGuest)
@@ -449,5 +485,135 @@ namespace FitnessApp2.Services
         }
 
 
+        //DELETE operations
+        //for RegisterGuest
+        //deleting all registered courses and instructors for a guest
+        public ICollection<CourseGuest> GetCoursesByGuestId(int guestId)
+        {
+            return _courseGuestRepository.GetCoursesByGuestId(guestId);
+        }
+        public ICollection<InstructorGuest> GetInstructorsByGuestId(int guestId)
+        {
+            return _instructorGuestRepository.GetInstructorsByGuestId(guestId);
+        }
+
+        public bool DeleteAllCourseGuest(List<CourseGuest> listOfCourseGuest)
+        {
+            return _courseGuestRepository.DeleteAllCourseGuest(listOfCourseGuest);
+        }
+
+        public bool DeleteAllInstructorGuest(List<InstructorGuest> listOfInstructorGuest)
+        {
+            return _instructorGuestRepository.DeleteAllInstructorGuest(listOfInstructorGuest);
+        }
+        //deleting one guest from a course
+        public CourseGuest GetCourseGuestByCourseIdAndGuestId(int courseId, int guestId)
+        {
+            return _courseGuestRepository.GetCourseGuestByCourseIdAndGuestId(courseId, guestId);
+        }
+        public InstructorGuest GetInstructorGuestByInstructorIdAndGuestId(int instrucId, int guestId)
+        {
+            return _instructorGuestRepository.GetInstructorGuestByInstructorIdAndGuestId(instrucId, guestId);
+        }
+
+        public bool DeleteCourseGuest(CourseGuest courseGuest)
+        {
+            return _courseGuestRepository.DeleteCourseGuest(courseGuest);
+        }
+
+        public bool DeleteInstructorGuest(InstructorGuest instructorGuest)
+        {
+            return _instructorGuestRepository.DeleteInstructorGuest(instructorGuest);
+        }
+
+
+        //for AssignInstructor
+        //deleting all assigned courses together with their guests for an instructor
+        //get instructors assigned to a course with courseId
+        public ICollection<CourseInstructor> GetInstructorsByCourseId(int courseId)
+        {
+            return _courseInstructorRepository.GetInstructorsByCourseId(courseId);
+        }
+
+        public ICollection<CourseInstructor> GetCoursesByInstructorId(int instrucId)
+        {
+            return _courseInstructorRepository.GetCoursesByInstructorId(instrucId);
+        }
+
+
+        //SCHEDULE INSTRUCTORS
+        //for one instructor retrieve all his courses and all guests of each course
+        public ScheduleInstructorViewModel BuildScheduleForInstructor(int instrucId)
+        {
+            Instructor instructor = _instructorRepository.GetInstructor(instrucId);
+            bool instrucHasCourses = _courseInstructorRepository.InstructorHasCourse(instrucId);
+            byte assignedHoursForInstructor = (byte)0; //initialize instructor assigned hours from all guests
+
+            List<dynamic> crsAndGst = new List<dynamic>();
+
+            if (instrucHasCourses)
+            {
+                ICollection<CourseInstructor> coursesForInstructor = _courseInstructorRepository.GetCoursesByInstructorId(instrucId);
+                foreach (CourseInstructor courseForInstructor in coursesForInstructor)
+                {
+                    Course currentCourse = new Course();
+                    currentCourse = _courseRepository.GetCourse(courseForInstructor.CourseId);
+
+                    bool courseHasGuests = _courseGuestRepository.CourseHasGuests(courseForInstructor.CourseId);
+                    List<Guest> guestsOfACourse = new List<Guest>();
+
+                    if (courseHasGuests)
+                    {
+                        ICollection<CourseGuest> guestsForCourse = _courseGuestRepository.GetGuestsByCourseId(courseForInstructor.CourseId);
+                        ICollection<InstructorGuest> guestsForInstructor = _instructorGuestRepository.GetGuestsByInstructorId(instrucId);
+                        foreach (CourseGuest guestForCourse in guestsForCourse)
+                        {
+                            foreach (InstructorGuest guestForInstructor in guestsForInstructor)
+                            {
+                                if (guestForInstructor.GuestId == guestForCourse.GuestId)
+                                {
+                                    Guest currentGuest = new Guest();
+                                    currentGuest = _guestRepository.GetGuest(guestForCourse.GuestId);
+                                    guestsOfACourse.Add(currentGuest);
+                                    assignedHoursForInstructor += currentGuest.Hours; //add hours of each guestOfInstructor to his instructor
+                                }
+                            }
+
+                        }
+                    }
+
+                    var o1 = new { Crs = currentCourse, Gst = guestsOfACourse };
+                    crsAndGst.Add(o1);
+                }
+            }
+
+            ScheduleInstructorViewModel scheduleInstructorViewModel = new ScheduleInstructorViewModel()
+            {
+                Id = instrucId,
+                FirstName = instructor.FirstName,
+                LastName = instructor.LastName,
+                FreeHours = (byte)(40 - assignedHoursForInstructor),
+                ReservedHours = assignedHoursForInstructor,
+                MaxHours = (byte)40,
+                CrsAndGst = (instrucHasCourses) ? crsAndGst : null
+            };
+            return scheduleInstructorViewModel;
+        }
+
+        //for all instructors retrieve all their courses and all the guests of each course
+        public ICollection<ScheduleInstructorViewModel> BuildScheduleForInstructors()
+        {
+            List<Instructor> instructorsAsList = _instructorRepository.GetInstructors().ToList();
+            List<ScheduleInstructorViewModel> scheduleInstructorsViewModel = new List<ScheduleInstructorViewModel>();
+
+            foreach (Instructor instructor in instructorsAsList)
+            {
+                ScheduleInstructorViewModel scheduleInstructorViewModel = new ScheduleInstructorViewModel();
+                scheduleInstructorViewModel = BuildScheduleForInstructor(instructor.Id);
+                scheduleInstructorsViewModel.Add(scheduleInstructorViewModel);
+            }
+
+            return scheduleInstructorsViewModel;
+        }
     }
 }

@@ -112,7 +112,27 @@ namespace FitnessApp2.Controllers
                     return View();
                 }
 
-                //add and save instructor to db context
+                //check if ANY INSTRUCTOR has at least 5 hours free to take on one more course with at least 1...5 guests (which can choose between 1...5 hours)
+                ICollection<Instructor> instructorsAsList = _fitnessServices.GetInstructors().ToList();
+                bool anyInstructorHasFreeHours = false;
+                foreach (Instructor instructor in instructorsAsList)
+                {
+                    bool instrucHasFreeHours = _fitnessServices.CheckInstructorHasFreeHours(instructor.Id, (byte)35, "forWaitlistGuest", guestViewModel.Hours);
+                    if (instrucHasFreeHours)
+                    {
+                        anyInstructorHasFreeHours = true;
+                        break;
+                    }
+                }
+                if (!anyInstructorHasFreeHours)
+                {
+                    //return view to fill in email and phone
+                    WaitlistGuestViewModel model = new WaitlistGuestViewModel();
+                    TempData["errorMessage"] = "No Instructors does are available to new guests. You will be redirected to the Waitlist.";
+                    return View("CreateUnassignedGuest", model);
+                }
+
+                //add and save guest to db context
                 Guest guest = new Guest()
                 {
                     FirstName = guestViewModel.FirstName,
@@ -303,14 +323,76 @@ namespace FitnessApp2.Controllers
             }
         }
 
+        //--------------- CREATE NEW GUEST ON WAITLIST ---------------
+        [HttpPost]
+        public IActionResult CreateUnassignedGuest(WaitlistGuestViewModel waitlistGuestViewModel)
+        {
+            try
+            {
+                //check model
+                if (!ModelState.IsValid)
+                {
+                    TempData["errorMessage"] = "Model data is not valid.";
+                    return View();
+                }
 
+                //check if detail with this email and phone is already added to waitlist
+                Detail detailExists = _fitnessServices.GetDetailByPhoneAndEmail(waitlistGuestViewModel.Email, waitlistGuestViewModel.Phone);
+                if (detailExists != null)
+                {
+                    {
+                        TempData["errorMessage"] = "Guest alread added to Waitlist.";
+                        return View();
+                    }
+                }
 
+                //add and save guest to db context - this is a waitlist guest and will have DetailId
+                // a.create detail for guest
+                Detail detail = new Detail()
+                {
+                    Email = waitlistGuestViewModel.Email,
+                    Phone = waitlistGuestViewModel.Phone
+                };
+                bool statusCreateDetailInDb = _fitnessServices.CreateDetail(detail);
 
+                // b. retrieve detail id
+                Detail currentDetail = _fitnessServices.GetDetailByPhoneAndEmail(detail.Email, detail.Phone);
 
-
-
-
+                // c. add and save guest to db context
+                Guest guest = new Guest()
+                {
+                    FirstName = waitlistGuestViewModel.FirstName,
+                    LastName = waitlistGuestViewModel.LastName,
+                    Hours = waitlistGuestViewModel.Hours,
+                    DetailId = currentDetail.Id
+                };
+                bool statusCreateGuestInDb = _fitnessServices.CreateGuest(guest);
+                if (statusCreateDetailInDb && statusCreateGuestInDb)
+                {
+                    TempData["successMessage"] = "Guest added to Waitlist successfully!";
+                    return RedirectToAction("GetAssignedGuests", "Guest");
+                }
+                else
+                {
+                    TempData["errorMessage"] = $"Something went wrong when saving to database. Detail for guest has status {statusCreateDetailInDb} and guest added to Waitlist has status {statusCreateGuestInDb}";
+                    TempData["errorMessage"] = "Something went wrong when saving to database.";
+                    return RedirectToAction("GetAssignedGuests", "Guest");
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["errorMessage"] = ex.Message;
+                return View();
+            }
+        }
         
+
+
+
+
+
+
+
 
 
 

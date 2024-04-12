@@ -29,6 +29,11 @@ namespace FitnessApp2.Repository
             return _context.CourseGuests.Where(g => g.CourseId == courseId).ToList();
         }
 
+        public CourseGuest GetCourseGuestByCourseIdAndGuestId(int courseId, int guestId)
+        {
+            return _context.CourseGuests.Where(x => x.CourseId == courseId && x.GuestId == guestId).FirstOrDefault();
+        }
+
 
         public bool CourseHasGuests(int courseId)
         {
@@ -51,6 +56,23 @@ namespace FitnessApp2.Repository
         {
             var saved = _context.SaveChanges(); 
             return saved > 0 ? true : false;
+        }
+
+        //deleting all existing course<->guest
+        public bool DeleteAllCourseGuest(List<CourseGuest> listOfCourseGuest)
+        {
+            foreach (CourseGuest courseGuest in listOfCourseGuest)
+            {
+                _context.Remove(courseGuest);
+            }
+            return Save();
+        }
+
+        //deleting one guest from a course<->guest
+        public bool DeleteCourseGuest(CourseGuest courseGuest)
+        {
+            _context.Remove(courseGuest);
+            return Save();
         }
     }
 }

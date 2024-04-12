@@ -16,8 +16,10 @@ namespace FitnessApp2.Models.ViewModels
         [Range(1, 5)]
         public byte Hours { get; set; }
 
+        [EmailAddress]
         public string Email { get; set; }
 
+        [Phone]
         public string Phone { get; set; }
     }
 }

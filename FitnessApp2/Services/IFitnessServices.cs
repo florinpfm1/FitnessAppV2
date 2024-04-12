@@ -19,6 +19,9 @@ namespace FitnessApp2.Services
         //checks if an instructors exists in db with that Id
         public bool InstructorExists(int instrucId);
 
+        //check if instructor is assigned to at least one course
+        public bool InstructorHasCourse(int instrucId);
+
 
         //creating a new instructor
         public bool CreateInstructor(Instructor instructor);
@@ -55,6 +58,9 @@ namespace FitnessApp2.Services
         //checks if guest with the specified Id exists in db
         public bool GuestExists(int guestId);
 
+        //check if guest is registered to at least one course
+        public bool GuestHasCourse(int guestId);
+
 
         //creating a new guest
         public bool CreateGuest(Guest guest);
@@ -66,6 +72,14 @@ namespace FitnessApp2.Services
         public bool DeleteGuest(Guest guest);
 
 
+        //WAITLIST GUESTS
+        //retrieve detail by email and phone
+        public Detail GetDetailByPhoneAndEmail(string email, string phone);
+
+        //creating a new detail
+        public bool CreateDetail(Detail detail);
+
+
         //ASSIGN INSTRUCTORS
         //retrieve a list with all instructors and their courses from repository
         public ICollection<AssignInstructorViewModel> GetAssignInstructors();
@@ -73,8 +87,12 @@ namespace FitnessApp2.Services
         public List<SelectListItem> GetAvailableCoursesAssignInstruc(int Id);
         //check if instructor was assigned to this course selected by guest in dropdown
         public bool CheckInstructorAssignedToCourse(string courseChosen, int instrucId);
-        //check if instructor has at least 5 hours free to take on one more guest (which can choose between 1...5 hours)
-        public bool CheckInstructorHasFreeHours(int instrucId, byte hoursLimit);
+
+        //calculate free hours for instructor
+        public byte CalculateFreeHoursInstructor(int instrucId);
+        //check if instructor has at least 5 hours free to take on one more course with at least 1...5 guests (which can choose between 1...5 hours)
+        //check if instructor has free hours equal at least with the hours demanded by the new registered guest
+        public bool CheckInstructorHasFreeHours(int instrucId, byte hoursLimit, string forAction, byte? guestHours);
         //get one course by Id
         public Course GetCourse(int id);
         //get one course by Name
@@ -98,13 +116,41 @@ namespace FitnessApp2.Services
         public bool CheckGuestAssignedToCourse(string courseChosen, int guestId);
         //check if guest was already registered to this instructor selected in dropdown
         public bool CheckGuestAssignedToInstructor(string instrucChosen, int guestId);
-        //check if instructor has free hours equal at least with the hours demanded by the guest
-        public bool CheckInstructorHasFreeHours(string instrucChosen, byte hoursLimit);
 
 
         //registering a guest to a course
         public bool RegisterGuest(CourseGuest courseGuest);
         //registering a guest to an instructor
         public bool RegisterGuest(InstructorGuest instructorGuest);
+
+
+        //DELETE operations
+        //for RegisterGuest
+        //deleting all registered courses and instructors for a guest
+        public ICollection<CourseGuest> GetCoursesByGuestId(int guestId);
+        public ICollection<InstructorGuest> GetInstructorsByGuestId(int guestId);
+
+        public bool DeleteAllCourseGuest(List<CourseGuest> listOfCourseGuest);
+        public bool DeleteAllInstructorGuest(List<InstructorGuest> listOfInstructorGuest);
+
+        //deleting one guest from a course
+        public CourseGuest GetCourseGuestByCourseIdAndGuestId(int courseId, int guestId);
+        public InstructorGuest GetInstructorGuestByInstructorIdAndGuestId(int instrucId, int guestId);
+
+        public bool DeleteCourseGuest(CourseGuest courseGuest);
+        public bool DeleteInstructorGuest(InstructorGuest instructorGuest);
+
+        //for AssignInstructor
+        //deleting all assigned courses together with their guests for an instructor
+        //get instructors assigned to a course with courseId
+        public ICollection<CourseInstructor> GetInstructorsByCourseId(int courseId);
+        public ICollection<CourseInstructor> GetCoursesByInstructorId(int instrucId);
+
+
+        //SCHEDULE INSTRUCTORS
+        //for one instructor retrieve all his courses and all guests of each course
+        public ScheduleInstructorViewModel BuildScheduleForInstructor(int instrucId);
+        //for all instructors retrieve all their courses and all the guests of each course
+        public ICollection<ScheduleInstructorViewModel> BuildScheduleForInstructors();
     }
 }

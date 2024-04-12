@@ -60,6 +60,9 @@ else if (!string.IsNullOrWhiteSpace(errorMessage))
                             <div class="btn-group btn-group-sm">
                                 <a asp-controller="RegisterGuest" asp-action="EditRegisterGuest" asp-route-id="@registerGuest.Id" class="btn btn-primary">Register Guest To Course</a>
                             </div>
+                            <div class="btn-group btn-group-sm">
+                                <a asp-controller="RegisterGuest" asp-action="DeleteRegisterGuest" asp-route-id="@registerGuest.Id" class="btn btn-primary">Deregister</a>
+                            </div>
                         </td>
                     </tr>
                 }

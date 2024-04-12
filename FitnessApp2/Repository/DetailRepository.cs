@@ -37,10 +37,30 @@ namespace FitnessApp2.Repository
             return _context.Details.Where(d => d.Phone == phone).FirstOrDefault();
         }
 
+        //get one detail by email and phone
+        public Detail GetDetailByPhoneAndEmail(string email, string phone)
+        {
+            return _context.Details.Where(d => d.Email == email && d.Phone == phone).FirstOrDefault();
+        }
+
         //checks if detail with specified id exists in db
         public bool DetailExists(int? detailId)
         {
             return _context.Details.Any(d => d.Id == detailId);
+        }
+
+
+        //creating a new detail
+        public bool CreateDetail(Detail detail)
+        {
+            _context.Add(detail);
+            return Save();
+        }
+
+        public bool Save()
+        {
+            var saved = _context.SaveChanges();
+            return saved > 0 ? true : false;
         }
     }
 }

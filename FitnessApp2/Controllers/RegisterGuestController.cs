@@ -4,6 +4,7 @@ using FitnessApp2.Models.ViewModels;
 using FitnessApp2.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.IdentityModel.Protocols;
 
 namespace FitnessApp2.Controllers
 {
@@ -96,24 +97,17 @@ namespace FitnessApp2.Controllers
                     return View("EditRegisterGuest", registerGuestViewModel);
                 }
 
-                //check if instructor has free hours equal at least with the hours demanded by the guest
-                //************************************* AICI AM RAMAS********************
-                //in Services la CheckInstruHasFreeHours sa scot din el si sa faca CalculateInstructorFreeHours
-                //si apoi alta metoda: CheckInstructorFreeHours <<-- la Assign Instructor
-                //si apoi alta metoda: CheckInstructorFreeHours <<-- la Register Guest 
-                // pt ca au formule diferite:
-                // instrucHasFreeHours = (assignedHoursForInstructor <= (byte)35) ? true : false;
-                // instrucHasFreeHours = (assignedHoursForInstructor + registerGuestViewModel.Hours <= (byte)40) ? true : false;
-                bool instrucHasFreeHours = _fitnessServices.CheckInstructorHasFreeHours(registerGuestViewModel.InstructorSelected, (byte)40);
+                //retrieve the selected course and selected instructor by guest in dropdown (by its name parsed to id)
+                Course courseSelected = _fitnessServices.GetCourse(Int32.Parse(registerGuestViewModel.CourseSelected));
+                Instructor instructorSelected = _fitnessServices.GetInstructor(Int32.Parse(registerGuestViewModel.InstructorSelected));
+
+                //check if instructor has free hours equal at least with the hours demanded by the new registered guest
+                bool instrucHasFreeHours = _fitnessServices.CheckInstructorHasFreeHours(instructorSelected.Id, (byte)40, "forRegisterGuest", registerGuestViewModel.Hours);
                 if (!instrucHasFreeHours)
                 {
                     TempData["errorMessage"] = "Instructor does not have enough free hours to take the guest.";
                     return View("EditRegisterGuest", registerGuestViewModel);
                 }
-
-                //retrieve the selected course and selected instructor by guest in dropdown (by its name parsed to id)
-                Course courseSelected = _fitnessServices.GetCourse(Int32.Parse(registerGuestViewModel.CourseSelected));
-                Instructor instructorSelected = _fitnessServices.GetInstructor(Int32.Parse(registerGuestViewModel.InstructorSelected));
 
                 //create link in db guest<->course and guest<->instructor, create and save CourseGuest and InstructorGuest to db context
                 CourseGuest courseGuest = new CourseGuest()
@@ -149,7 +143,65 @@ namespace FitnessApp2.Controllers
             }
         }
 
+        //--------------- DE-REGISTER GUEST FROM ALL HIS COURSES ---------------
+        [HttpGet]
+        public IActionResult DeleteRegisterGuest(int Id)
+        {
+            //build GuestViewModel
+            Guest guest = _fitnessServices.GetGuest(Id);
+            GuestViewModel guestViewModel = new GuestViewModel();
+            guestViewModel.Id = guest.Id;
+            guestViewModel.FirstName = guest.FirstName;
+            guestViewModel.LastName = guest.LastName;
+            return View(guestViewModel);
+        }
 
+        [HttpPost]
+        public IActionResult DeleteRegisterGuest(GuestViewModel guestViewModel)
+        {
+            try
+            {
+                //check if guest with id exists in db
+                bool guestExists = _fitnessServices.GuestExists(guestViewModel.Id);
+                if (!guestExists)
+                {
+                    TempData["errorMessage"] = $"Guest with the GuestID: {guestViewModel.Id} is not found.";
+                    return RedirectToAction("GetRegisterGuests", "RegisterGuest");
+                }
+
+                //check if guest is registered to at least one course
+                bool guestIsRegisteredToAnyCourse = _fitnessServices.GuestHasCourse(guestViewModel.Id);
+                if (!guestIsRegisteredToAnyCourse)
+                {
+                    TempData["errorMessage"] = $"Guest with the GuestID: {guestViewModel.Id} is not registered to any course.";
+                    return RedirectToAction("GetRegisterGuests", "RegisterGuest");
+                }
+
+                //retrieve a list of course<->guest and instructor<->guest
+                List<CourseGuest> listOfCourseGuest = _fitnessServices.GetCoursesByGuestId(guestViewModel.Id).ToList();
+                List<InstructorGuest> listOfInstructorGuest = _fitnessServices.GetInstructorsByGuestId(guestViewModel.Id).ToList();
+
+                //delete guest from all his courses in db
+                bool statusDeleteGuestToCourseInDb = _fitnessServices.DeleteAllCourseGuest(listOfCourseGuest);
+                bool statusDeleteGuestToInstructorInDb = _fitnessServices.DeleteAllInstructorGuest(listOfInstructorGuest);
+
+                if (statusDeleteGuestToCourseInDb && statusDeleteGuestToInstructorInDb)
+                {
+                    TempData["successMessage"] = "Guest deregistered successfully!";
+                    return RedirectToAction("GetRegisterGuests", "RegisterGuest");
+                }
+                else
+                {
+                    TempData["errorMessage"] = $"Something went wrong when deleting from database. Guest deregistered from course has status {statusDeleteGuestToCourseInDb} and guest deregistered from instructor has status {statusDeleteGuestToInstructorInDb}";
+                    return RedirectToAction("GetRegisterGuests", "RegisterGuest");
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["errorMessage"] = ex.Message;
+                return View("GetRegisterGuests", "RegisterGuest");
+            }
+        }
 
 
 

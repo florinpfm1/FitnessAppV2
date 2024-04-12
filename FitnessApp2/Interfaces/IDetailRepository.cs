@@ -8,6 +8,11 @@ namespace FitnessApp2.Interfaces
         Detail GetDetail(int? id);
         Detail GetDetailByEmail(string email);
         Detail GetDetailByPhone(string phone);
+        public Detail GetDetailByPhoneAndEmail(string email, string phone);
         bool DetailExists(int? detailId);
+
+        //creating
+        public bool CreateDetail(Detail detail);
+
     }
 }
