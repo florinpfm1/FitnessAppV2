@@ -52,7 +52,6 @@
                                 <tr>
                                     <td class="text-center">@assignedCourseAndGuests.Crs.Name</td>
                                 </tr>
-
                                 <form>
                                     <table class="table table-responsive table-hover">
                                         <thead>
@@ -66,7 +65,6 @@
                                         <tbody>
                                             @if (assignedCourseAndGuests.Gst.Count != 0)
                                             {
-
                                                 foreach (var assignedGuest in assignedCourseAndGuests.Gst)
                                                 {
                                                     <tr>
@@ -76,7 +74,6 @@
                                                         <td class="text-center">@assignedGuest.Hours</td>
                                                     </tr>
                                                 }
-
                                             }
                                             else
                                             {
@@ -88,7 +85,6 @@
                                                     </td>
                                                 </tr>
                                             }
-
                                         </tbody>
                                     </table>
                                 </form>
@@ -114,3 +110,6 @@ else
         No Instructor was created yet!
     </div>
 }
+<div class="mt-3">
+    <a class="btn btn-dark text-white text-decoration-none" asp-area="" asp-controller="Home" asp-action="Index">Back to Home</a>
+</div>

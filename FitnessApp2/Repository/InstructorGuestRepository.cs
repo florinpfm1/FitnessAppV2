@@ -15,6 +15,7 @@ namespace FitnessApp2.Repository
             this._context = context;
         }
 
+        //retrieving
         public ICollection<InstructorGuest> GetGuestsByInstructorId(int instrucId)
         {
             return _context.InstructorGuests.Where(g => g.InstructorId == instrucId).ToList();
@@ -35,6 +36,7 @@ namespace FitnessApp2.Repository
             return _context.InstructorGuests.Any(g => g.InstructorId == instrucId);
         }
 
+        //checking
         public bool InstructorHasGuests(int guestId)
         {
             return _context.InstructorGuests.Any(i => i.GuestId == guestId);

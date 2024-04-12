@@ -11,7 +11,6 @@ namespace FitnessApp2.Controllers
     public class InstructorController : Controller
     {
         private readonly IFitnessServices _fitnessServices;
-
         public InstructorController(IFitnessServices fitnessServices)
         {
             this._fitnessServices = fitnessServices;
@@ -61,7 +60,7 @@ namespace FitnessApp2.Controllers
 
                 //check if instructor with this name is already added
                 Instructor instructorNameExists = _fitnessServices.GetInstructor(instructorViewModel.FirstName, instructorViewModel.LastName);
-                if (instructorNameExists == null)
+                if (instructorNameExists != null)
                 {
                     TempData["errorMessage"] = "Instructor already exists.";
                     return View();
@@ -122,7 +121,6 @@ namespace FitnessApp2.Controllers
                     Gender = instructor.Gender
                 };
                 return View(instructorViewModel);
-
             }
             catch (Exception ex)
             {
@@ -231,11 +229,5 @@ namespace FitnessApp2.Controllers
                 return RedirectToAction("GetInstructors", "Instructor");
             }
         }
-
-
-
-
-
-
     }
 }

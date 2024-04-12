@@ -1,7 +1,7 @@
 ﻿@model List<FitnessApp2.Models.ViewModels.GuestViewModel>
 
 @{
-    ViewData["Title"] = "Guests";   //aici e numele de View
+    ViewData["Title"] = "Guests";
     var successMessage = TempData["successMessage"]?.ToString();
     var errorMessage = TempData["errorMessage"]?.ToString();
 }
@@ -15,7 +15,6 @@
         <strong>Success! </strong>@successMessage
         <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-
 }
 else if (!string.IsNullOrWhiteSpace(errorMessage))
 {
@@ -25,8 +24,8 @@ else if (!string.IsNullOrWhiteSpace(errorMessage))
     </div>
 
 }
-<form>
-    <button asp-action="CreateGuest" asp-controller="Guest" class="btn btn-primary">Create Guest</button>
+<form class="backgroundColor1">
+    <button asp-action="CreateGuest" asp-controller="Guest" class="btn btn-primary marginUpLeftDown">Create Guest</button>
     <table class="table table-responsive table-hover">
         <thead>
             <tr class="table-active">
@@ -72,9 +71,9 @@ else if (!string.IsNullOrWhiteSpace(errorMessage))
                     </td>
                 </tr>
             }
-
-
         </tbody>
     </table>
 </form>
-
+<div class="mt-3">
+    <a class="btn btn-dark text-white text-decoration-none" asp-area="" asp-controller="Home" asp-action="Index">Back to Home</a>
+</div>

@@ -5,21 +5,21 @@ namespace FitnessApp2.Interfaces
     public interface IInstructorRepository
     {
         //retrieving
-        ICollection<Instructor> GetInstructors();
-        Instructor GetInstructor(int id);
-        Instructor GetInstructor(string firstName, string lastName);
-        //ICollection<Instructor> GetInstructors(DateOnly date);
-        ICollection<Instructor> GetInstructors(byte expYears);
-        ICollection<Instructor> GetInstructors(char gender);
-        bool InstructorExists(int instrucId);
+        public ICollection<Instructor> GetInstructors();
+        public Instructor GetInstructor(int id);
+        public Instructor GetInstructor(string firstName, string lastName);
+        public ICollection<Instructor> GetInstructors(byte expYears);
+        public ICollection<Instructor> GetInstructors(char gender);
+        //checking
+        public bool InstructorExists(int instrucId);
 
         //creating
-        bool CreateInstructor(Instructor instructor);
+        public bool CreateInstructor(Instructor instructor);
 
         //updating
-        bool UpdateInstructor(Instructor instructor);
+        public bool UpdateInstructor(Instructor instructor);
 
         //deleting
-        bool DeleteInstructor(Instructor instructor);
+        public bool DeleteInstructor(Instructor instructor);
     }
 }

@@ -13,13 +13,10 @@ namespace FitnessApp2.Controllers
     public class GuestController : Controller
     {
         private readonly IFitnessServices _fitnessServices;
-
         public GuestController(IFitnessServices fitnessServices)
         {
             this._fitnessServices = fitnessServices;
         }
-
-        public IInstructorRepository InstructorRepository { get; }
 
         //--------------- RETRIEVE ALL ASSIGNED GUESTS ---------------
         public IActionResult GetAssignedGuests()
@@ -38,19 +35,15 @@ namespace FitnessApp2.Controllers
                     AddedDate = guest.AddedDate,
                     Hours = guest.Hours,
                     SectionName = currentSection.Name
-
                 };
                 guestsViewModel.Add(guestViewModel);
             }
-
             return View(guestsViewModel);
         }
 
         //--------------- RETRIEVE ALL UNASSIGNED GUESTS ---------------
         public IActionResult GetUnassignedGuests()
         {
-            
-
             ICollection<Guest> guestsAsList = _fitnessServices.GetUnassignedGuests();
             List<WaitlistGuestViewModel> waitlistGuestsViewModel = new List<WaitlistGuestViewModel>();
 
@@ -65,16 +58,13 @@ namespace FitnessApp2.Controllers
                     Hours = guest.Hours,
                     Email = currentDetail.Email,
                     Phone = currentDetail.Phone,
-
                 };
                 waitlistGuestsViewModel.Add(waitlistGuestViewModel);
             }
-
             return View(waitlistGuestsViewModel);
         }
 
         //--------------- CREATE A NEW GUEST ---------------
-
         [HttpGet]
         public IActionResult CreateGuest()
         {
@@ -153,7 +143,6 @@ namespace FitnessApp2.Controllers
                     TempData["errorMessage"] = "Something went wrong when saving to database.";
                     return RedirectToAction("GetAssignedGuests", "Guest");
                 }
-
             }
             catch (Exception ex)
             {
@@ -191,7 +180,6 @@ namespace FitnessApp2.Controllers
                     SectionName = sectionSelected.Name
                 };
                 return View(guestViewModel);
-
             }
             catch (Exception ex)
             {
@@ -287,7 +275,6 @@ namespace FitnessApp2.Controllers
                     SectionName = sectionSelected.Name
                 };
                 return View(guestViewModel);
-
             }
             catch (Exception ex)
             {
@@ -347,7 +334,7 @@ namespace FitnessApp2.Controllers
                 }
 
                 //add and save guest to db context - this is a waitlist guest and will have DetailId
-                // a.create detail for guest
+                // --create detail for guest
                 Detail detail = new Detail()
                 {
                     Email = waitlistGuestViewModel.Email,
@@ -355,10 +342,10 @@ namespace FitnessApp2.Controllers
                 };
                 bool statusCreateDetailInDb = _fitnessServices.CreateDetail(detail);
 
-                // b. retrieve detail id
+                // --retrieve detail id
                 Detail currentDetail = _fitnessServices.GetDetailByPhoneAndEmail(detail.Email, detail.Phone);
 
-                // c. add and save guest to db context
+                // --add and save guest to db context
                 Guest guest = new Guest()
                 {
                     FirstName = waitlistGuestViewModel.FirstName,
@@ -385,16 +372,5 @@ namespace FitnessApp2.Controllers
                 return View();
             }
         }
-        
-
-
-
-
-
-
-
-
-
-
     }
 }

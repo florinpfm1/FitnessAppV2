@@ -4,11 +4,13 @@ namespace FitnessApp2.Interfaces
 {
     public interface ICourseRepository
     {
-        ICollection<Course> GetCourses();
-        Course GetCourse(int id);
-        Course GetCourse(string name);
-        ICollection<Course> GetCourses(string difficulty);
-        ICollection<Course> GetCourses(byte rating);
-        bool CourseExists(int courseId);
+        //retrieving
+        public ICollection<Course> GetCourses();
+        public Course GetCourse(int id);
+        public Course GetCourse(string name);
+        public ICollection<Course> GetCourses(string difficulty);
+        public ICollection<Course> GetCourses(byte rating);
+        //checking
+        public bool CourseExists(int courseId);
     }
 }

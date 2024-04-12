@@ -19,17 +19,5 @@ namespace FitnessApp2.Models.ViewModels
         public byte Hours { get; set; }
 
         public string SectionName { get; set; }
-
-        //public string? SectionName { get; set; }
-        
-        //public string InstructorName { get; set; }
-
-        //public string CourseName { get; set; }
-        
-
-        /*
-        [DisplayName("Name")]
-        public string FullName { get { return FirstName + " " + LastName; } }
-        */
     }
 }

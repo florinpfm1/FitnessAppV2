@@ -5,14 +5,14 @@ namespace FitnessApp2.Interfaces
     public interface IGuestRepository
     {
         //retrieving
-        ICollection<Guest> GetGuests();
-        ICollection<Guest> GetAssignedGuests();
-        ICollection<Guest> GetUnassignedGuests();
-        Guest GetGuest(int id);
-        Guest GetGuest(string firstName, string lastName);
-        //ICollection<Guest> GetGuests(DateOnly date);
-        ICollection<Guest> GetGuests(byte hours);
-        bool GuestExists(int guestId);
+        public ICollection<Guest> GetGuests();
+        public ICollection<Guest> GetAssignedGuests();
+        public ICollection<Guest> GetUnassignedGuests();
+        public Guest GetGuest(int id);
+        public Guest GetGuest(string firstName, string lastName);
+        public ICollection<Guest> GetGuests(byte hours);
+        //checking
+        public bool GuestExists(int guestId);
 
         //creating
         public bool CreateGuest(Guest guest);

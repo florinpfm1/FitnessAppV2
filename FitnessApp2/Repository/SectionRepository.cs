@@ -7,7 +7,6 @@ namespace FitnessApp2.Repository
     public class SectionRepository : ISectionRepository
     {
         private FAppDbContext _context;
-
         public SectionRepository(FAppDbContext context)
         {
             this._context = context;

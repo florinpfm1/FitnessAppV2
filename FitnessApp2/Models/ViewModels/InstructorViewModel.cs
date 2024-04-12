@@ -19,10 +19,5 @@ namespace FitnessApp2.Models.ViewModels
         public byte? ExperienceYears { get; set; }
 
         public char? Gender { get; set; }
-
-        /*
-        [DisplayName("Name")]
-        public string FullName { get { return FirstName + " " + LastName; } }
-        */
     }
 }

@@ -38,7 +38,7 @@ namespace FitnessApp2.Services
             this._instructorGuestRepository = instructorGuestRepository;
         }
 
-        //INSTRUCTORS
+        //======================================   INSTRUCTORS   ======================================
         //retrieve a list with all instructors from repository
         public ICollection<Instructor> GetInstructors()
         {
@@ -69,27 +69,25 @@ namespace FitnessApp2.Services
             return _courseInstructorRepository.InstructorHasCourse(instrucId);
         }
 
-
-        //creating a new instructor
+        //~~~ CREATING a new INSTRUCTOR ~~~
         public bool CreateInstructor(Instructor instructor)
         {
             return _instructorRepository.CreateInstructor(instructor);
         }
 
-
-        //updating an existing instructor
+        //~~~ updating an existing instructor ~~~
         public bool UpdateInstructor(Instructor instructor)
         {
             return _instructorRepository.UpdateInstructor(instructor);
         }
 
-        //deleting an existing instructor
+        //~~~ deleting an existing instructor ~~~
         public bool DeleteInstructor(Instructor instructor)
         {
             return _instructorRepository.DeleteInstructor(instructor);
         }
 
-        //GUESTS
+        //======================================   GUESTS   ======================================
         //retrieve all assigned guests from repository
         public ICollection<Guest> GetAssignedGuests()
         {
@@ -144,39 +142,38 @@ namespace FitnessApp2.Services
             return _courseGuestRepository.GuestHasCourse(guestId);
         }
 
-
-        //creating a new guest
+        //~~~ CREATING a new GUEST ~~~
         public bool CreateGuest(Guest guest)
         {
             return _guestRepository.CreateGuest(guest);
         }
 
-        //updating an existing instructor
+        //~~~ updating an existing instructor ~~~
         public bool UpdateGuest(Guest guest)
         {
             return _guestRepository.UpdateGuest(guest);
         }
 
-        //deleting an existing instructor
+        //~~~ deleting an existing instructor ~~~
         public bool DeleteGuest(Guest guest)
         {
             return _guestRepository.DeleteGuest(guest);
         }
 
-        //WAITLIST GUESTS
+        //======================================   WAITLIST GUESTS   ======================================
         //retrieve detail by email and phone
         public Detail GetDetailByPhoneAndEmail(string email, string phone)
         {
             return _detailRepository.GetDetailByPhoneAndEmail(email, phone);
         }
 
-        //creating a new detail
+        //~~~ creating a new detail ~~~
         public bool CreateDetail(Detail detail)
         {
             return _detailRepository.CreateDetail(detail);
         }
 
-        //ASSIGN INSTRUCTORS
+        //======================================   ASSIGN INSTRUCTORS   ======================================
         //retrieve a list with all instructors and their courses from repository
         public ICollection<AssignInstructorViewModel> GetAssignInstructors()
         {
@@ -210,6 +207,24 @@ namespace FitnessApp2.Services
             return assignInstructorsViewModel;
         }
 
+        //build AssignInstructorViewModel with dropdown options
+        public AssignInstructorViewModel BuildAssignInstructorViewModel(int Id)
+        {
+            //get a list of course that can be assigned to instructor
+            List<SelectListItem> availableCoursesToAssign = GetAvailableCoursesAssignInstruc(Id);
+
+            //convert and send instructor to POST method
+            Instructor instructor = _instructorRepository.GetInstructor(Id);
+            AssignInstructorViewModel assignInstructorViewModel = new AssignInstructorViewModel()
+            {
+                Id = instructor.Id,
+                FirstName = instructor.FirstName,
+                LastName = instructor.LastName,
+                AvailableCoursesToAssign = availableCoursesToAssign, //list of strings
+            };
+            return assignInstructorViewModel;
+        }
+
         //retrieve available courses to be assigned for AssignInstructor by id as <SelectListItem>
         public List<SelectListItem> GetAvailableCoursesAssignInstruc(int Id)
         {
@@ -240,7 +255,6 @@ namespace FitnessApp2.Services
             {
                 availableCoursesToAssign.Add(new SelectListItem { Text = course.Name, Value = course.Id.ToString() });
             }
-
             return availableCoursesToAssign;
         }
 
@@ -337,15 +351,13 @@ namespace FitnessApp2.Services
             return _courseRepository.GetCourse(name);
         }
 
-
-        //assigning an instructor to a course
+        //~~~ ASSIGNING an INSTRUCTOR to a course ~~~
         public bool AssignInstructor(CourseInstructor courseInstructor)
         {
             return _courseInstructorRepository.AssignInstructor(courseInstructor);
         }
 
-
-        //REGISTER GUESTS
+        //======================================   REGISTER GUESTS   ======================================
         //retrieve a list with all guests and their courses from repository
         public ICollection<RegisterGuestViewModel> GetRegisterGuests()
         {
@@ -377,6 +389,29 @@ namespace FitnessApp2.Services
             }
 
             return registerGuestsViewModel;
+        }
+
+        //build RegisterGuestViewModel with dropdown options
+        public RegisterGuestViewModel BuildRegisterGuestViewModel(int Id)
+        {
+            //get a list of courses that can be assigned to guest <SelectListItem>
+            List<SelectListItem> availableCoursesToAssign = GetAvailableCoursesRegisterGuest(Id);
+
+            //get a list of all instructors as <SelectListItem>
+            List<SelectListItem> allInstructors = GetAllInstructorsRegisterGuest();
+
+            //convert and send instructor to POST method
+            Guest guest = _guestRepository.GetGuest(Id);
+            RegisterGuestViewModel registerGuestViewModel = new RegisterGuestViewModel()
+            {
+                Id = guest.Id,
+                FirstName = guest.FirstName,
+                LastName = guest.LastName,
+                Hours = guest.Hours,
+                AvailableCoursesToAssign = availableCoursesToAssign, //list of strings
+                AllInstructors = allInstructors //list of strings (fName + ' ' + lName)
+            };
+            return registerGuestViewModel;
         }
 
         //retrieve available courses to register for RegisterGuest by id as <SelectListItem>
@@ -471,23 +506,29 @@ namespace FitnessApp2.Services
             return guestAssignedToInstructor;
         }
 
+        //check if guest is already registered to any instructor
+        public bool InstructorHasGuests(int guestId)
+        {
+            return _instructorGuestRepository.InstructorHasGuests(guestId);
+        }
 
-        //registering a guest to a course
+
+        //~~~ REGISTERING a GUEST to a COURSE ~~~
         public bool RegisterGuest(CourseGuest courseGuest)
         {
             return _courseGuestRepository.RegisterGuest(courseGuest);
         }
 
-        //registering a guest to an instructor
+        //~~~ REGISTERING a GUEST to an INSTRUCTOR
         public bool RegisterGuest(InstructorGuest instructorGuest)
         {
             return _instructorGuestRepository.RegisterGuest(instructorGuest);
         }
 
 
-        //DELETE operations
-        //for RegisterGuest
-        //deleting all registered courses and instructors for a guest
+        ////====================================== UN-ASSIGN / UN-REGISTER operations //======================================
+        //__________ for RegisterGuest __________
+        //deleting one guest from all registered courses and all assigned instructors
         public ICollection<CourseGuest> GetCoursesByGuestId(int guestId)
         {
             return _courseGuestRepository.GetCoursesByGuestId(guestId);
@@ -506,7 +547,7 @@ namespace FitnessApp2.Services
         {
             return _instructorGuestRepository.DeleteAllInstructorGuest(listOfInstructorGuest);
         }
-        //deleting one guest from a course
+        //deleting one guest from a course and from an instructor
         public CourseGuest GetCourseGuestByCourseIdAndGuestId(int courseId, int guestId)
         {
             return _courseGuestRepository.GetCourseGuestByCourseIdAndGuestId(courseId, guestId);
@@ -527,9 +568,8 @@ namespace FitnessApp2.Services
         }
 
 
-        //for AssignInstructor
-        //deleting all assigned courses together with their guests for an instructor
-        //get instructors assigned to a course with courseId
+        //__________ for AssignInstructor __________
+        //deleting an instructor from all assigned courses together with their guests
         public ICollection<CourseInstructor> GetInstructorsByCourseId(int courseId)
         {
             return _courseInstructorRepository.GetInstructorsByCourseId(courseId);
@@ -540,8 +580,23 @@ namespace FitnessApp2.Services
             return _courseInstructorRepository.GetCoursesByInstructorId(instrucId);
         }
 
+        public CourseInstructor GetCourseInstructorByCourseIdAndInstructorId(int courseId, int instrucId)
+        {
+            return _courseInstructorRepository.GetCourseInstructorByCourseIdAndInstructorId(courseId, instrucId);
+        }
 
-        //SCHEDULE INSTRUCTORS
+        public bool DeleteAllCourseInstructor(List<CourseInstructor> listOfCourseInstructor)
+        {
+            return _courseInstructorRepository.DeleteAllCourseInstructor(listOfCourseInstructor);
+        }
+
+        public bool DeleteCourseInstructor(CourseInstructor courseInstructor)
+        {
+            return _courseInstructorRepository.DeleteCourseInstructor(courseInstructor);
+        }
+
+
+        //====================================== SCHEDULE INSTRUCTORS ======================================
         //for one instructor retrieve all his courses and all guests of each course
         public ScheduleInstructorViewModel BuildScheduleForInstructor(int instrucId)
         {
@@ -612,7 +667,6 @@ namespace FitnessApp2.Services
                 scheduleInstructorViewModel = BuildScheduleForInstructor(instructor.Id);
                 scheduleInstructorsViewModel.Add(scheduleInstructorViewModel);
             }
-
             return scheduleInstructorsViewModel;
         }
     }

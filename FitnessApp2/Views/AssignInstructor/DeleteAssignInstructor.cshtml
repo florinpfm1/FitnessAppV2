@@ -1,7 +1,7 @@
-﻿@model FitnessApp2.Models.ViewModels.GuestViewModel
+﻿@model FitnessApp2.Models.ViewModels.InstructorViewModel
 
 @{
-    ViewData["Title"] = "Delete Guest";
+    ViewData["Title"] = "Deassign Instructor";
     var errorMessage = TempData["errorMessage"]?.ToString();
 }
 
@@ -14,8 +14,9 @@
         <strong>Error! </strong>@errorMessage
         <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
+
 }
-<form asp-controller="Guest" asp-action="DeleteGuest" method="post">
+<form asp-controller="AssignInstructor" asp-action="DeleteAssignInstructor" method="post">
     <div class="mb-3">
         <label class="form-label">Id</label>
         <input type="text" class="form-control" asp-for="Id" readonly />
@@ -28,22 +29,10 @@
         <label class="form-label">Last Name</label>
         <input type="text" class="form-control" asp-for="LastName" readonly />
     </div>
-    <div class="mb-3">
-        <label class="form-label">Date Added</label>
-        <input type="date" class="form-control" asp-for="AddedDate" readonly />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Hours</label>
-        <input type="text" class="form-control" asp-for="Hours" readonly />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">SectionName</label>
-        <input type="text" class="form-control" asp-for="SectionName" readonly />
-    </div>
     <div class="d-grid">
-        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete guest with ID: @Model.Id ?')">Delete</button>
+        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to deassign instructor with ID: @Model.Id ?')">Deassign</button>
     </div>
 </form>
 <div class="mt-3">
-    <a class="btn btn-dark text-white text-decoration-none" asp-area="" asp-controller="Guest" asp-action="GetAssignedGuests">Back to main</a>
+    <a class="btn btn-dark text-white text-decoration-none" asp-area="" asp-controller="AssignInstructor" asp-action="GetAssignInstructors">Back to main</a>
 </div>

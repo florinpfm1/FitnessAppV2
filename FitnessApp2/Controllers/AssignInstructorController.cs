@@ -6,6 +6,7 @@ using FitnessApp2.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace FitnessApp2.Controllers
@@ -13,7 +14,6 @@ namespace FitnessApp2.Controllers
     public class AssignInstructorController : Controller
     {
         private readonly IFitnessServices _fitnessServices;
-
         public AssignInstructorController(IFitnessServices fitnessServices)
         {
             this._fitnessServices = fitnessServices;
@@ -31,10 +31,6 @@ namespace FitnessApp2.Controllers
         [HttpGet]
         public IActionResult EditAssignInstructor(int Id)
         {
-            //get a list of course that can be assigned to instructor
-            List<SelectListItem> availableCoursesToAssign = _fitnessServices.GetAvailableCoursesAssignInstruc(Id);
-
-            //retrieve instructor info from db and prepare AssignInstructorViewModel for POST below
             try
             {
                 //check if instructor with id exists in db
@@ -45,24 +41,15 @@ namespace FitnessApp2.Controllers
                     return RedirectToAction("GetAssignInstructors", "AssignInstructor");
                 }
 
-                //convert and send instructor to POST method
-                Instructor instructor = _fitnessServices.GetInstructor(Id);
-                AssignInstructorViewModel assignInstructorViewModel = new AssignInstructorViewModel()
-                {
-                    Id = instructor.Id,
-                    FirstName = instructor.FirstName,
-                    LastName = instructor.LastName,
-                    AvailableCoursesToAssign = availableCoursesToAssign, //list of strings
-                };
+                //retrieve instructor info from db and prepare AssignInstructorViewModel for POST below
+                AssignInstructorViewModel assignInstructorViewModel = _fitnessServices.BuildAssignInstructorViewModel(Id);
                 return View(assignInstructorViewModel);
-
             }
             catch (Exception ex)
             {
                 TempData["errorMessage"] = ex.Message;
                 return RedirectToAction("GetAssignInstructors", "AssignInstructor");
             }
-
         }
 
         [HttpPost]
@@ -82,7 +69,8 @@ namespace FitnessApp2.Controllers
                 if (instructorAssignedToCourse)
                 {
                     TempData["errorMessage"] = "Instructor is already assigned to this course.";
-                    return View(assignInstructorViewModel);
+                    AssignInstructorViewModel rebuiltAssignInstructorViewModel = _fitnessServices.BuildAssignInstructorViewModel(assignInstructorViewModel.Id);
+                    return View("EditAssignInstructor", rebuiltAssignInstructorViewModel);
                 }
 
                 //check if instructor has at least 5 hours free to take on one more course with at least 1...5 guests (which can choose between 1...5 hours)
@@ -90,7 +78,17 @@ namespace FitnessApp2.Controllers
                 if (!instrucHasFreeHours)
                 {
                     TempData["errorMessage"] = "Instructor does not have free hours to start a new course.";
-                    return View(assignInstructorViewModel);
+                    AssignInstructorViewModel rebuiltAssignInstructorViewModel = _fitnessServices.BuildAssignInstructorViewModel(assignInstructorViewModel.Id);
+                    return View("EditAssignInstructor", rebuiltAssignInstructorViewModel);
+                }
+
+                //check if instructor is already assigned to a course
+                bool instrucHasCourse = _fitnessServices.InstructorHasCourse(assignInstructorViewModel.Id);
+                if (instrucHasCourse)
+                {
+                    TempData["errorMessage"] = "Instructor is already assigned to a course.";
+                    AssignInstructorViewModel rebuiltAssignInstructorViewModel = _fitnessServices.BuildAssignInstructorViewModel(assignInstructorViewModel.Id);
+                    return View("EditAssignInstructor", rebuiltAssignInstructorViewModel);
                 }
 
                 //retrieve the selected course by its name
@@ -114,21 +112,17 @@ namespace FitnessApp2.Controllers
                     TempData["errorMessage"] = "Something went wrong when saving to database.";
                     return RedirectToAction("GetAssignInstructors", "AssignInstructor");
                 }
-
             }
             catch (Exception ex)
             {
                 TempData["errorMessage"] = ex.Message;
                 return RedirectToAction("GetAssignInstructors", "AssignInstructor");
             }
-
-
         }
-
 
         //--------------- DE-ASSIGN INSTRUCTOR FROM ALL HIS COURSES ---------------
         [HttpGet]
-        public IActionResult DeleteAssignGuest(int Id)
+        public IActionResult DeleteAssignInstructor(int Id)
         {
             //build InstructorViewModel
             Instructor instructor = _fitnessServices.GetInstructor(Id);
@@ -140,7 +134,7 @@ namespace FitnessApp2.Controllers
         }
 
         [HttpPost]
-        public IActionResult DeleteAssignGuest(InstructorViewModel instructorViewModel)
+        public IActionResult DeleteAssignInstructor(InstructorViewModel instructorViewModel)
         {
             try
             {
@@ -165,65 +159,107 @@ namespace FitnessApp2.Controllers
                 myScheduleInstructorViewModel = _fitnessServices.BuildScheduleForInstructor(instructorViewModel.Id);
                 var myListCrsAndGst = myScheduleInstructorViewModel.CrsAndGst; //courses and their guests to register again
 
+                //initialize list of instructor assigned courses
+                List<CourseInstructor> listCourseInstructor = new List<CourseInstructor>();
+
+                //initialize status for deregistration of guest from a course and instructor
+                bool statusDeleteGuest = true;
+                bool statusReregisterGuest = true;
+
                 foreach (var crsAndGst in myListCrsAndGst)
                 {
-                    if(crsAndGst.Gst.Count >= 1)
+                    if (crsAndGst.Crs is not null)
                     {
-                        foreach (Guest currentGuest in crsAndGst.Gst)
+                        if (crsAndGst.Gst.Count >= 1)
                         {
-                            //delete current guest from course and from instructor
-                            CourseGuest courseGuestToDeregister = _fitnessServices.GetCourseGuestByCourseIdAndGuestId(crsAndGst.Crs.Id, currentGuest.Id);
-                            InstructorGuest instructorGuestToDeregister = _fitnessServices.GetInstructorGuestByInstructorIdAndGuestId(instructorViewModel.Id, currentGuest.Id);
-                            bool statusDeleteGuestToCourseInDb = _fitnessServices.DeleteCourseGuest(courseGuestToDeregister);
-                            bool statusDeleteGuestToInstructorInDb = _fitnessServices.DeleteInstructorGuest(instructorGuestToDeregister);
-
-                            //build List instructors with free hours
-                            List<ScheduleInstructorViewModel> scheduleInstructorsViewModel = new List<ScheduleInstructorViewModel>();
-                            scheduleInstructorsViewModel = _fitnessServices.BuildScheduleForInstructors().ToList();
-                            List<ScheduleInstructorViewModel> freeHoursScheduleInstructorsViewModel = scheduleInstructorsViewModel.Where(elem => elem.FreeHours >= 5).OrderBy(elem => elem.FreeHours).ToList();
-
-                            //filter List instructors only the ones with assigned courses
-                            List<ScheduleInstructorViewModel> withAssignedCoursesScheduleInstructorsViewModel = freeHoursScheduleInstructorsViewModel.Where(elem => elem.CrsAndGst != null).OrderBy(elem => elem.FreeHours).ToList(); ;
-
-                            
-
-                            if (withAssignedCoursesScheduleInstructorsViewModel.Count >= 1)
+                            foreach (Guest currentGuest in crsAndGst.Gst)
                             {
-                                //register currentGuest to myListInstructors[0].Id
-                                InstructorGuest instructorGuestToRegister = new InstructorGuest()
+                                //delete current guest from course and from instructor
+                                CourseGuest courseGuestToDeregister = _fitnessServices.GetCourseGuestByCourseIdAndGuestId(crsAndGst.Crs.Id, currentGuest.Id);
+                                InstructorGuest instructorGuestToDeregister = _fitnessServices.GetInstructorGuestByInstructorIdAndGuestId(instructorViewModel.Id, currentGuest.Id);
+                                bool statusDeleteGuestToCourseInDb = _fitnessServices.DeleteCourseGuest(courseGuestToDeregister);
+                                bool statusDeleteGuestToInstructorInDb = _fitnessServices.DeleteInstructorGuest(instructorGuestToDeregister);
+
+                                if (!(statusDeleteGuestToCourseInDb && statusDeleteGuestToInstructorInDb))
                                 {
-                                    InstructorId = withAssignedCoursesScheduleInstructorsViewModel[0].Id,
-                                    GuestId = currentGuest.Id
-                                };
+                                    statusDeleteGuest = false;
+                                }
 
-                                //obtain list of courses from myListInstructors[0].Id
-                                List<CourseInstructor> coursesForFirstInstructor = _fitnessServices.GetCoursesByInstructorId(withAssignedCoursesScheduleInstructorsViewModel[0].Id).ToList();
-
-                                //register currentGuest to first course
-                                CourseGuest courseGuestToRegister = new CourseGuest()
+                                //build List instructors with free hours
+                                List<ScheduleInstructorViewModel> scheduleInstructorsViewModel = new List<ScheduleInstructorViewModel>();
+                                scheduleInstructorsViewModel = _fitnessServices.BuildScheduleForInstructors().ToList();
+                                List<ScheduleInstructorViewModel> scheduleInstructorViewModelsWithoutCurrent = new List<ScheduleInstructorViewModel>();
+                                ScheduleInstructorViewModel currentScheduleInstructor = _fitnessServices.BuildScheduleForInstructor(instructorViewModel.Id);
+                                
+                                foreach (ScheduleInstructorViewModel elem in scheduleInstructorsViewModel)
                                 {
-                                    CourseId = coursesForFirstInstructor[0].CourseId,
-                                    GuestId = currentGuest.Id
-                                };
+                                    if (elem.Id != instructorViewModel.Id) 
+                                    {
+                                        scheduleInstructorViewModelsWithoutCurrent.Add(elem);
+                                    }
+                                }
+                                List<ScheduleInstructorViewModel> freeHoursScheduleInstructorsViewModel = scheduleInstructorViewModelsWithoutCurrent.Where(elem => elem.FreeHours >= 5 && elem.FreeHours <= 40).OrderByDescending(elem => elem.FreeHours).ToList();
 
-                                bool statusRegisterGuestToCourseInDb = _fitnessServices.RegisterGuest(courseGuestToRegister);
-                                bool statusRegisterGuestToInstructorInDb = _fitnessServices.RegisterGuest(instructorGuestToRegister);
+                                //filter List instructors only the ones with assigned courses
+                                List<ScheduleInstructorViewModel> withAssignedCoursesScheduleInstructorsViewModel = freeHoursScheduleInstructorsViewModel.Where(elem => elem.CrsAndGst != null).OrderByDescending(elem => elem.FreeHours).ToList(); ;
 
-                            }   
-                            
+                                if (withAssignedCoursesScheduleInstructorsViewModel.Count >= 1)
+                                {
+                                    //register currentGuest to myListInstructors[0].Id
+                                    InstructorGuest instructorGuestToRegister = new InstructorGuest()
+                                    {
+                                        InstructorId = withAssignedCoursesScheduleInstructorsViewModel[0].Id,
+                                        GuestId = currentGuest.Id
+                                    };
+
+                                    //obtain list of courses from myListInstructors[0].Id
+                                    List<CourseInstructor> coursesForFirstInstructor = _fitnessServices.GetCoursesByInstructorId(withAssignedCoursesScheduleInstructorsViewModel[0].Id).ToList();
+
+                                    //register currentGuest to first course
+                                    CourseGuest courseGuestToRegister = new CourseGuest()
+                                    {
+                                        CourseId = coursesForFirstInstructor[0].CourseId,
+                                        GuestId = currentGuest.Id
+                                    };
+
+                                    bool statusRegisterGuestToCourseInDb = _fitnessServices.RegisterGuest(courseGuestToRegister);
+                                    bool statusRegisterGuestToInstructorInDb = _fitnessServices.RegisterGuest(instructorGuestToRegister);
+
+                                    if (!(statusRegisterGuestToCourseInDb && statusRegisterGuestToInstructorInDb))
+                                    {
+                                        statusReregisterGuest = false;
+                                    }
+                                }
+                            }
                         }
-                            
+                        
+                        //when Course exists add CourseInstructor to list of instructor assigned courses
+                        CourseInstructor currentAssignedCourse = _fitnessServices.GetCourseInstructorByCourseIdAndInstructorId(crsAndGst.Crs.Id, instructorViewModel.Id);
+                        listCourseInstructor.Add(currentAssignedCourse);
                     }
                 }
+                //delete instructor from all his courses
+                bool statusDeleteCourseToInstructorInDb = _fitnessServices.DeleteAllCourseInstructor(listCourseInstructor);
 
+                if (statusDeleteCourseToInstructorInDb && statusDeleteGuest && statusReregisterGuest)
+                {
+                    TempData["successMessage"] = "Instructor deassigned successfully!";
+                    return RedirectToAction("GetAssignInstructors", "AssignInstructor");
+                }
+                else
+                {
+                    TempData["errorMessage"] = $"Something went wrong when deleting from database. " +
+                        $"Instructor deassigned from course has status {statusDeleteCourseToInstructorInDb} " +
+                        $"Guests deregistered from courses has status {statusDeleteGuest}" +
+                        $"Guests reregistered from courses has status {statusReregisterGuest}";
+                    return RedirectToAction("GetAssignInstructors", "AssignInstructor");
+                }
             }
             catch (Exception ex)
             {
                 TempData["errorMessage"] = ex.Message;
                 return RedirectToAction("GetAssignInstructors", "AssignInstructor");
             }
-
-            return View();
         }
     }
 }

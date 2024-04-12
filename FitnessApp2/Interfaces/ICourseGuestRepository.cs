@@ -4,16 +4,18 @@ namespace FitnessApp2.Interfaces
 {
     public interface ICourseGuestRepository
     {
-        ICollection<CourseGuest> GetCoursesByGuestId(int guestId);
-        ICollection<CourseGuest> GetCoursesNotAssignedToGuestId(int guestId);
-        ICollection<CourseGuest> GetGuestsByCourseId(int courseId);
+        //retrieving
+        public ICollection<CourseGuest> GetCoursesByGuestId(int guestId);
+        public ICollection<CourseGuest> GetCoursesNotAssignedToGuestId(int guestId);
+        public ICollection<CourseGuest> GetGuestsByCourseId(int courseId);
         public CourseGuest GetCourseGuestByCourseIdAndGuestId(int courseId, int guestId);
 
-        bool CourseHasGuests(int courseId);
-        bool GuestHasCourse(int instrucId);
+        //checking
+        public bool CourseHasGuests(int courseId);
+        public bool GuestHasCourse(int instrucId);
 
         //creating, updating
-        bool RegisterGuest(CourseGuest courseGuest);
+        public bool RegisterGuest(CourseGuest courseGuest);
 
         //deleting all existing course<->guest
         public bool DeleteAllCourseGuest(List<CourseGuest> listOfCourseGuest);

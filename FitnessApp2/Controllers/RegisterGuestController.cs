@@ -11,7 +11,6 @@ namespace FitnessApp2.Controllers
     public class RegisterGuestController : Controller
     {
         private readonly IFitnessServices _fitnessServices;
-
         public RegisterGuestController(IFitnessServices fitnessServices)
         {
             this._fitnessServices = fitnessServices;
@@ -29,14 +28,6 @@ namespace FitnessApp2.Controllers
         [HttpGet]
         public IActionResult EditRegisterGuest(int Id)
         {
-            //get a list of courses that can be assigned to guest <SelectListItem>
-            List<SelectListItem> availableCoursesToAssign = _fitnessServices.GetAvailableCoursesRegisterGuest(Id);
-
-            //get a list of all instructors as <SelectListItem>
-            List<SelectListItem> allInstructors = _fitnessServices.GetAllInstructorsRegisterGuest();
-
-
-            //retrieve guest info from db and prepare RegisterGuestViewModel for POST below
             try
             {
                 //check if guest with id exists in db
@@ -47,17 +38,8 @@ namespace FitnessApp2.Controllers
                     return RedirectToAction("GetRegisterGuests", "RegisterGuest");
                 }
 
-                //convert and send instructor to POST method
-                Guest guest = _fitnessServices.GetGuest(Id);
-                RegisterGuestViewModel registerGuestViewModel = new RegisterGuestViewModel()
-                {
-                    Id = guest.Id,
-                    FirstName = guest.FirstName,
-                    LastName = guest.LastName,
-                    Hours = guest.Hours,
-                    AvailableCoursesToAssign = availableCoursesToAssign, //list of strings
-                    AllInstructors = allInstructors //list of strings (fName + ' ' + lName)
-                };
+                //retrieve guest info from db and prepare RegisterGuestViewModel for POST below
+                RegisterGuestViewModel registerGuestViewModel = _fitnessServices.BuildRegisterGuestViewModel(Id);
                 return View(registerGuestViewModel);
             }
             catch (Exception ex)
@@ -84,7 +66,8 @@ namespace FitnessApp2.Controllers
                 if (!instructorAssignedToCourse)
                 {
                     TempData["errorMessage"] = "Chosen Instructor is not assigned to this course.";
-                    return View("EditRegisterGuest", registerGuestViewModel);
+                    RegisterGuestViewModel rebuiltRegisterGuestViewModel = _fitnessServices.BuildRegisterGuestViewModel(registerGuestViewModel.Id);
+                    return View("EditRegisterGuest", rebuiltRegisterGuestViewModel);
                 }
 
                 //check if guest was already registered to this course selected in dropdown
@@ -94,7 +77,8 @@ namespace FitnessApp2.Controllers
                 if (guestAssignedToCourse && guestAssignedToInstructor)
                 {
                     TempData["errorMessage"] = "Guest is already assigned to this course.";
-                    return View("EditRegisterGuest", registerGuestViewModel);
+                    RegisterGuestViewModel rebuiltRegisterGuestViewModel = _fitnessServices.BuildRegisterGuestViewModel(registerGuestViewModel.Id);
+                    return View("EditRegisterGuest", rebuiltRegisterGuestViewModel);
                 }
 
                 //retrieve the selected course and selected instructor by guest in dropdown (by its name parsed to id)
@@ -106,7 +90,18 @@ namespace FitnessApp2.Controllers
                 if (!instrucHasFreeHours)
                 {
                     TempData["errorMessage"] = "Instructor does not have enough free hours to take the guest.";
-                    return View("EditRegisterGuest", registerGuestViewModel);
+                    RegisterGuestViewModel rebuiltRegisterGuestViewModel = _fitnessServices.BuildRegisterGuestViewModel(registerGuestViewModel.Id);
+                    return View("EditRegisterGuest", rebuiltRegisterGuestViewModel);
+                }
+
+                //check if guest is already registered to a course/instructor
+                bool guestHasCourses = _fitnessServices.GuestHasCourse(registerGuestViewModel.Id);
+                bool instructorHasGuests = _fitnessServices.InstructorHasGuests(registerGuestViewModel.Id);
+                if (guestHasCourses && instructorHasGuests)
+                {
+                    TempData["errorMessage"] = "Guest is already registered to a course/instructor.";
+                    RegisterGuestViewModel rebuiltRegisterGuestViewModel = _fitnessServices.BuildRegisterGuestViewModel(registerGuestViewModel.Id);
+                    return View("EditRegisterGuest", rebuiltRegisterGuestViewModel);
                 }
 
                 //create link in db guest<->course and guest<->instructor, create and save CourseGuest and InstructorGuest to db context
@@ -134,7 +129,6 @@ namespace FitnessApp2.Controllers
                     TempData["errorMessage"] = $"Something went wrong when saving to database. Guest registered to course has status {statusRegisterGuestToCourseInDb} and guest registered to instructor has status {statusRegisterGuestToInstructorInDb}";
                     return RedirectToAction("GetRegisterGuests", "RegisterGuest");
                 } 
-                
             }
             catch (Exception ex)
             {
@@ -202,9 +196,5 @@ namespace FitnessApp2.Controllers
                 return View("GetRegisterGuests", "RegisterGuest");
             }
         }
-
-
-
-
     }
 }

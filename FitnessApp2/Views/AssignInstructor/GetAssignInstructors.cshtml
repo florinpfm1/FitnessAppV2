@@ -1,7 +1,7 @@
-﻿@model List<FitnessApp2.Models.ViewModels.AssignInstructorViewModel>  //aici specificam Modelul primit de unde sa il ia
+﻿@model List<FitnessApp2.Models.ViewModels.AssignInstructorViewModel>
 
 @{
-    ViewData["Title"] = "Assign Instructors";   //aici e numele de View
+    ViewData["Title"] = "Assign Instructors";
     var successMessage = TempData["successMessage"]?.ToString();
     var errorMessage = TempData["errorMessage"]?.ToString();
 }
@@ -23,7 +23,7 @@ else if (!string.IsNullOrWhiteSpace(errorMessage))
         <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
-<form>
+<form class="backgroundColor1">
     <table class="table table-responsive table-hover">
         <thead>
             <tr class="table-active">
@@ -37,10 +37,10 @@ else if (!string.IsNullOrWhiteSpace(errorMessage))
         <tbody>
             @if (Model != null && Model.Any())
             {
-                @foreach (var assignInstructor in Model)  //aici Model reprezinta ce apare sus cu ICollection<FitnessApp2.Models.DbEntities.Instructor> deci e o lista ICollection de obiecte instructor
+                @foreach (var assignInstructor in Model)
                 {
                     <tr>
-                        <td class="text-center">@assignInstructor.Id</td> @*aici @instructor ma folosesc de variabila instructor din foreach, ii pot accesa proprietatile cu . *@
+                        <td class="text-center">@assignInstructor.Id</td>
                         <td class="text-center">@assignInstructor.FirstName</td>
                         <td class="text-center">@assignInstructor.LastName</td>
                         <td class="text-center">
@@ -58,7 +58,10 @@ else if (!string.IsNullOrWhiteSpace(errorMessage))
                         </td>
                         <td class="text-center">
                             <div class="btn-group btn-group-sm">
-                                <a asp-controller="AssignInstructor" asp-action="EditAssignInstructor" asp-route-id="@assignInstructor.Id" class="btn btn-primary">Assign Instructor</a>
+                                <a asp-controller="AssignInstructor" asp-action="EditAssignInstructor" asp-route-id="@assignInstructor.Id" class="btn btn-primary">Assign</a>
+                            </div>
+                            <div class="btn-group btn-group-sm">
+                                <a asp-controller="AssignInstructor" asp-action="DeleteAssignInstructor" asp-route-id="@assignInstructor.Id" class="btn btn-danger">Deassign</a>
                             </div>
                         </td>
                     </tr>
@@ -77,3 +80,6 @@ else if (!string.IsNullOrWhiteSpace(errorMessage))
         </tbody>
     </table>
 </form>
+<div class="mt-3">
+    <a class="btn btn-dark text-white text-decoration-none" asp-area="" asp-controller="Home" asp-action="Index">Back to Home</a>
+</div>

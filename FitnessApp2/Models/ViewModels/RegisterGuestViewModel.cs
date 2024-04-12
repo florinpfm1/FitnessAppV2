@@ -20,13 +20,11 @@ namespace FitnessApp2.Models.ViewModels
         [DisplayName("Assigned Courses")]
         public List<string>? AssignedCourses { get; set; }
 
-
         public string? CourseSelected { get; set; }
 
         public string? InstructorSelected { get; set; }
 
         public List<SelectListItem>? AvailableCoursesToAssign { get; set; }
-
 
         public List<SelectListItem>? AllInstructors { get; set; }
     }

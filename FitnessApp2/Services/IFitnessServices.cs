@@ -84,6 +84,8 @@ namespace FitnessApp2.Services
         //retrieve a list with all instructors and their courses from repository
         public ICollection<AssignInstructorViewModel> GetAssignInstructors();
         //retrieve available courses to be assigned for AssignInstructor by id as <SelectListItem>
+        //build AssignInstructorViewModel with dropdown options
+        public AssignInstructorViewModel BuildAssignInstructorViewModel(int Id);
         public List<SelectListItem> GetAvailableCoursesAssignInstruc(int Id);
         //check if instructor was assigned to this course selected by guest in dropdown
         public bool CheckInstructorAssignedToCourse(string courseChosen, int instrucId);
@@ -110,12 +112,16 @@ namespace FitnessApp2.Services
         public List<SelectListItem> GetAvailableCoursesRegisterGuest(int Id);
         //get a list of all instructors as <SelectListItem>
         public List<SelectListItem> GetAllInstructorsRegisterGuest();
+        //build RegisterGuestViewModel with dropdown options
+        public RegisterGuestViewModel BuildRegisterGuestViewModel(int Id);
         //check if instructor selected in dropdown was assigned to this course selected in dropdown
         public bool CheckInstructorAssignedToCourse(string courseChosen, string instrucChosen);
         //check if guest was already registered to this course selected in dropdown
         public bool CheckGuestAssignedToCourse(string courseChosen, int guestId);
         //check if guest was already registered to this instructor selected in dropdown
         public bool CheckGuestAssignedToInstructor(string instrucChosen, int guestId);
+        //check if guest is already registered to any instructor
+        public bool InstructorHasGuests(int guestId);
 
 
         //registering a guest to a course
@@ -145,6 +151,9 @@ namespace FitnessApp2.Services
         //get instructors assigned to a course with courseId
         public ICollection<CourseInstructor> GetInstructorsByCourseId(int courseId);
         public ICollection<CourseInstructor> GetCoursesByInstructorId(int instrucId);
+        public CourseInstructor GetCourseInstructorByCourseIdAndInstructorId(int courseId, int instrucId);
+        public bool DeleteAllCourseInstructor(List<CourseInstructor> listOfCourseInstructor);
+        public bool DeleteCourseInstructor(CourseInstructor courseInstructor);
 
 
         //SCHEDULE INSTRUCTORS

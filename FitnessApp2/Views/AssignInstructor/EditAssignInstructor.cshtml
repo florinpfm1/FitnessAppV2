@@ -7,14 +7,13 @@
 
 <h3>@ViewData["Title"]</h3>
 <hr />
-<!-- *********** SERVER SIDE VALIDATION *************** -->
+<!-- *********** temp messages for 5s *************** -->
 @if (!string.IsNullOrWhiteSpace(errorMessage))
 {
     <div class="alert alert-danger">
         <strong>Error! </strong>@errorMessage
         <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-
 }
 <form asp-controller="AssignInstructor" asp-action="EditAssignInstructor" method="post">
     <div class="mb-3">
@@ -41,9 +40,10 @@
         <button type="submit" class="btn btn-primary">Submit</button>
     </div>
 </form>
-<!-- *********** CLIENT SIDE VALIDATION *************** -->
-<!-- aici facem legatura cu scripturi de client side validation pt instructor data care vine de la forms din webpage fields -->
-<!-- momentan e comentata pt ca vreau sa fac doar server side validation -->
+<div class="mt-3">
+    <a class="btn btn-dark text-white text-decoration-none" asp-area="" asp-controller="AssignInstructor" asp-action="GetAssignInstructors">Back to main</a>
+</div>
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");

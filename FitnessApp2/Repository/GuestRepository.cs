@@ -7,7 +7,6 @@ namespace FitnessApp2.Repository
     public class GuestRepository : IGuestRepository
     {
         private FAppDbContext _context;
-
         public GuestRepository(FAppDbContext context)
         {
             this._context=context;
@@ -43,6 +42,7 @@ namespace FitnessApp2.Repository
             return _context.Guests.Where(g => g.FirstName == firstName && g.LastName == lastName).FirstOrDefault();
         }
 
+        //get a List of guests by Date
         public ICollection<Guest> GetGuests(DateOnly date)
         {
             throw new NotImplementedException();

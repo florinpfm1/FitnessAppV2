@@ -7,12 +7,12 @@ namespace FitnessApp2.Repository
     public class CourseGuestRepository : ICourseGuestRepository
     {
         private readonly FAppDbContext _context;
-
         public CourseGuestRepository(FAppDbContext context)
         {
             this._context = context;
         }
 
+        //retrieving
         public ICollection<CourseGuest> GetCoursesByGuestId(int guestId)
         {
             return _context.CourseGuests.Where(c => c.GuestId == guestId).ToList();
@@ -34,7 +34,7 @@ namespace FitnessApp2.Repository
             return _context.CourseGuests.Where(x => x.CourseId == courseId && x.GuestId == guestId).FirstOrDefault();
         }
 
-
+        //checking
         public bool CourseHasGuests(int courseId)
         {
             return _context.CourseGuests.Any(c => c.CourseId == courseId);

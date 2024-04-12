@@ -25,13 +25,13 @@ namespace FitnessApp2.Repository
             return _context.Instructors.Where(i => i.Id == id).FirstOrDefault();
         }
 
-        
         //get one instructor by FirstName and LastName
         public Instructor GetInstructor(string firstName, string lastName)
         {
             return _context.Instructors.Where(i => i.FirstName == firstName && i.LastName == lastName).FirstOrDefault();
         }
 
+        //get a List of all instructors by Date
         public ICollection<Instructor> GetInstructors(DateOnly date)
         {
             throw new NotImplementedException();
@@ -49,8 +49,7 @@ namespace FitnessApp2.Repository
             return _context.Instructors.Where(i => i.Gender == gender).OrderBy(i => i.Id).ToList();
         }
 
-        //checks if an instructors exists in db with that Id
-        //Any() will return a bool true/false
+        //checks if an instructors exists in db with that Id ( Any() will return a bool true/false )
         public bool InstructorExists(int instrucId)
         {
             return _context.Instructors.Any(i => i.Id == instrucId);

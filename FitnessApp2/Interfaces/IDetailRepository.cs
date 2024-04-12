@@ -4,12 +4,14 @@ namespace FitnessApp2.Interfaces
 {
     public interface IDetailRepository
     {
-        ICollection<Detail> GetDetails();
-        Detail GetDetail(int? id);
-        Detail GetDetailByEmail(string email);
-        Detail GetDetailByPhone(string phone);
+        //retrieving
+        public ICollection<Detail> GetDetails();
+        public Detail GetDetail(int? id);
+        public Detail GetDetailByEmail(string email);
+        public Detail GetDetailByPhone(string phone);
         public Detail GetDetailByPhoneAndEmail(string email, string phone);
-        bool DetailExists(int? detailId);
+        //checking
+        public bool DetailExists(int? detailId);
 
         //creating
         public bool CreateDetail(Detail detail);

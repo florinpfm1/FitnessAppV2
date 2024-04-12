@@ -12,7 +12,6 @@ namespace FitnessApp2.Controllers
     public class ScheduleInstructorController : Controller
     {
         private readonly IFitnessServices _fitnessServices;
-
         public ScheduleInstructorController(IFitnessServices fitnessServices)
         {
             this._fitnessServices = fitnessServices;
@@ -23,7 +22,6 @@ namespace FitnessApp2.Controllers
         {
             List<ScheduleInstructorViewModel> scheduleInstructorsViewModel = new List<ScheduleInstructorViewModel>();
             scheduleInstructorsViewModel = _fitnessServices.BuildScheduleForInstructors().ToList();
-
             return View(scheduleInstructorsViewModel);
         }
     }

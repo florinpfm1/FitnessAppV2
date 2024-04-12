@@ -1,7 +1,7 @@
-﻿@model List<FitnessApp2.Models.ViewModels.InstructorViewModel>  //aici specificam Modelul primit de unde sa il ia
+﻿@model List<FitnessApp2.Models.ViewModels.InstructorViewModel>
 
 @{
-    ViewData["Title"] = "Instructors";   //aici e numele de View
+    ViewData["Title"] = "Instructors";
     var successMessage = TempData["successMessage"]?.ToString();
     var errorMessage = TempData["errorMessage"]?.ToString();
 }
@@ -23,8 +23,8 @@ else if (!string.IsNullOrWhiteSpace(errorMessage))
         <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
-<form>
-    <button asp-action="CreateInstructor" asp-controller="Instructor" class="btn btn-primary">Create Instructor</button>
+<form class="backgroundColor1">
+    <button asp-action="CreateInstructor" asp-controller="Instructor" class="btn btn-primary marginUpLeftDown">Create Instructor</button>
     <table class="table table-responsive table-hover">
         <thead>
             <tr class="table-active">
@@ -40,10 +40,10 @@ else if (!string.IsNullOrWhiteSpace(errorMessage))
         <tbody>
             @if (Model != null && Model.Any())
             {
-                @foreach (var instructor in Model)  //aici Model reprezinta ce apare sus cu ICollection<FitnessApp2.Models.DbEntities.Instructor> deci e o lista ICollection de obiecte instructor
+                @foreach (var instructor in Model)
                 {
                     <tr>
-                        <td class="text-center">@instructor.Id</td> @*aici @instructor ma folosesc de variabila instructor din foreach, ii pot accesa proprietatile cu . *@
+                        <td class="text-center">@instructor.Id</td>
                         <td class="text-center">@instructor.FirstName</td>
                         <td class="text-center">@instructor.LastName</td>
                         <td class="text-center">
@@ -100,3 +100,6 @@ else if (!string.IsNullOrWhiteSpace(errorMessage))
         </tbody>
     </table>
 </form>
+<div class="mt-3">
+    <a class="btn btn-dark text-white text-decoration-none" asp-area="" asp-controller="Home" asp-action="Index">Back to Home</a>
+</div>

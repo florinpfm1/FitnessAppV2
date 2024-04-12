@@ -7,7 +7,6 @@ namespace FitnessApp2.Repository
     public class DetailRepository : IDetailRepository
     {
         private FAppDbContext _context;
-
         public DetailRepository(FAppDbContext context)
         {
             this._context = context;
@@ -48,7 +47,6 @@ namespace FitnessApp2.Repository
         {
             return _context.Details.Any(d => d.Id == detailId);
         }
-
 
         //creating a new detail
         public bool CreateDetail(Detail detail)

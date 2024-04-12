@@ -8,11 +8,12 @@ namespace FitnessApp2.Repository
     public class CourseInstructorRepository : ICourseInstructorRepository
     {
         private readonly FAppDbContext _context;
-
         public CourseInstructorRepository(FAppDbContext context)
         {
             this._context = context;
         }
+
+        //retrieving
         public ICollection<CourseInstructor> GetCoursesByInstructorId(int instrucId)
         {
             return _context.CourseInstructors.Where(c => c.InstructorId == instrucId).ToList();
@@ -29,11 +30,13 @@ namespace FitnessApp2.Repository
             return _context.CourseInstructors.Where(i => i.CourseId == courseId).ToList();
         }
 
-        public CourseInstructor GetInstrucWithIdHasCourseWithId(int instrucId, int courseId)
+        public CourseInstructor GetCourseInstructorByCourseIdAndInstructorId(int courseId, int instrucId) 
         {
             return _context.CourseInstructors.Where(i => i.InstructorId == instrucId && i.CourseId == courseId).FirstOrDefault();
+
         }
 
+        //checking
         public bool CourseHasInstructor(int courseId)
         {
             return _context.CourseInstructors.Any(c => c.CourseId == courseId);
@@ -56,6 +59,23 @@ namespace FitnessApp2.Repository
         {
             var saved = _context.SaveChanges();
             return saved > 0 ? true : false;
+        }
+
+        //deleting all existing course<->instructor
+        public bool DeleteAllCourseInstructor(List<CourseInstructor> listOfCourseInstructor)
+        {
+            foreach (CourseInstructor courseInstructor in listOfCourseInstructor)
+            {
+                _context.Remove(courseInstructor);
+            }
+            return Save();
+        }
+
+        //deleting one instructor from a course<->instructor
+        public bool DeleteCourseInstructor(CourseInstructor courseInstructor)
+        {
+            _context.Remove(courseInstructor);
+            return Save();
         }
     }
 }

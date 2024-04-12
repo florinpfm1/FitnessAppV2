@@ -10,10 +10,7 @@ namespace FitnessApp2.Controllers
     public class CourseController : Controller
     {
         private readonly ICourseRepository _courseRepository;
-
-        public CourseController(
-            ICourseRepository courseRepository
-            )
+        public CourseController(ICourseRepository courseRepository)
         {
             this._courseRepository = courseRepository;
         }
@@ -38,16 +35,7 @@ namespace FitnessApp2.Controllers
                 };
                 coursesViewModel.Add(courseViewModel);
             }
-
             return View(coursesViewModel);
         }
-
-        
-
-
-
-
-
-
     }
 }

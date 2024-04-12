@@ -7,7 +7,6 @@ namespace FitnessApp2.Repository
     public class CourseRepository : ICourseRepository
     {
         private FAppDbContext _context;
-
         public CourseRepository(FAppDbContext context)
         {
             this._context = context;   
