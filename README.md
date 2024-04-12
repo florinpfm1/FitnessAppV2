@@ -22,7 +22,7 @@ Entity Framework Core Tools for the NuGet Package Manager Console in Visual Stud
 The most popular front-end framework for developing responsive, mobile first projects on the web.
 
 Persistent storage:
--SQL Server 2022 - locahost machine - db (will be using the db named 'FitnessData3' with x tables)
+-SQL Server 2022 - locahost machine - db (will be using the db named 'FitnessData2' with x tables)
 -SSMS v 19.3.4.0 - db management tool
 
 Connection string:
@@ -47,7 +47,6 @@ Work steps: for Code First approach
 7a) seed the db - in Terminal (PowerShell) while you are in the folder of your app where you have the <app_name>.csproj file run command 'dotnet run seeddata'
 7b) refresh SQL Server and check some values are added to all tables
 7c) repository - makes code more flexible - is where we place all our SQL db calls (by using the context from Entity)
-
 8) create Controllers - add at the beginning initialization of DbContext so we can have access to db data
 9) create ViewModels
 10) create Views
