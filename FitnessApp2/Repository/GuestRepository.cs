@@ -54,7 +54,7 @@ namespace FitnessApp2.Repository
             return _context.Guests.Where(g => g.Hours == hours).ToList();
         }
 
-        //checks if guest with the specified Id exists in db
+        //check if guest with the specified Id exists in db
         public bool GuestExists(int guestId)
         {
             return _context.Guests.Any(g => g.Id == guestId);

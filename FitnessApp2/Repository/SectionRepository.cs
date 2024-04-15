@@ -30,7 +30,7 @@ namespace FitnessApp2.Repository
             return _context.Sections.Where(s => s.Name == name).FirstOrDefault();
         }
 
-        //checks if section with specified id exists in db
+        //check if section with specified id exists in db
         public bool SectionExists(int sectionId)
         {
             return _context.Sections.Any(s => s.Id == sectionId);

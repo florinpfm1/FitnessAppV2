@@ -25,6 +25,5 @@ namespace FitnessApp2.Models.DbEntities
 
         public ICollection<CourseInstructor>? CourseInstructors { get; set; }
         public ICollection<InstructorGuest>? InstructorGuests { get; set; }
-
     }
 }

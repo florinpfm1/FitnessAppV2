@@ -31,18 +31,18 @@ namespace FitnessApp2.Repository
             return _context.InstructorGuests.Where(x => x.InstructorId == instrucId && x.GuestId == guestId).FirstOrDefault();
         }
 
+        //checking
         public bool GuestHasInstructors(int instrucId)
         {
             return _context.InstructorGuests.Any(g => g.InstructorId == instrucId);
         }
-
-        //checking
+        
         public bool InstructorHasGuests(int guestId)
         {
             return _context.InstructorGuests.Any(i => i.GuestId == guestId);
         }
 
-        //assign a guest to an instructor
+        //register a guest to an instructor
         public bool RegisterGuest(InstructorGuest instructorGuest)
         {
             _context.Add(instructorGuest);

@@ -42,7 +42,7 @@ namespace FitnessApp2.Repository
             return _context.Details.Where(d => d.Email == email && d.Phone == phone).FirstOrDefault();
         }
 
-        //checks if detail with specified id exists in db
+        //check if detail with specified id exists in db
         public bool DetailExists(int? detailId)
         {
             return _context.Details.Any(d => d.Id == detailId);

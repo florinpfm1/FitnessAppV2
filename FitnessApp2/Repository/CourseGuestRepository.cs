@@ -45,7 +45,7 @@ namespace FitnessApp2.Repository
             return _context.CourseGuests.Any(g => g.GuestId == guestId);
         }
 
-        //assign a guest to a course
+        //register a guest to a course
         public bool RegisterGuest(CourseGuest courseGuest)
         {
             _context.Add(courseGuest);

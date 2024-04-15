@@ -1,10 +1,7 @@
-﻿using FitnessApp2.Interfaces;
-using FitnessApp2.Models.DbEntities;
+﻿using FitnessApp2.Models.DbEntities;
 using FitnessApp2.Models.ViewModels;
-using FitnessApp2.Repository;
 using FitnessApp2.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace FitnessApp2.Controllers
 {
@@ -109,7 +106,7 @@ namespace FitnessApp2.Controllers
                     return RedirectToAction("GetInstructors", "Instructor");
                 }
 
-                //convert and send instructor to PUT method
+                //convert and send instructor to POST method
                 Instructor instructor = _fitnessServices.GetInstructor(Id);
                 InstructorViewModel instructorViewModel = new InstructorViewModel()  
                 {
@@ -182,7 +179,7 @@ namespace FitnessApp2.Controllers
                     return RedirectToAction("GetInstructors", "Instructor");
                 }
 
-                //convert and send instructor to DELETE method
+                //convert and send instructor to POST method
                 Instructor instructor = _fitnessServices.GetInstructor(Id);
                 InstructorViewModel instructorViewModel = new InstructorViewModel()
                 {
@@ -194,7 +191,6 @@ namespace FitnessApp2.Controllers
                     Gender = instructor.Gender
                 };
                 return View(instructorViewModel);
-
             }
             catch (Exception ex)
             {

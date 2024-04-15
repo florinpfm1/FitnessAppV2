@@ -42,7 +42,7 @@ namespace FitnessApp2.Repository
             return _context.Courses.Where(c => c.Rating == rating).ToList();
         }
 
-        //checks if course with specified Id exists in db
+        //check if course with specified Id exists in db
         public bool CourseExists(int courseId)
         {
             return _context.Courses.Any(c => c.Id == courseId);

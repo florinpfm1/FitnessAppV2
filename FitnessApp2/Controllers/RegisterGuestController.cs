@@ -3,8 +3,6 @@ using FitnessApp2.Models.DbEntities;
 using FitnessApp2.Models.ViewModels;
 using FitnessApp2.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.IdentityModel.Protocols;
 
 namespace FitnessApp2.Controllers
 {

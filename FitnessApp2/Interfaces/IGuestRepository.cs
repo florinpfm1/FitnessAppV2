@@ -11,6 +11,7 @@ namespace FitnessApp2.Interfaces
         public Guest GetGuest(int id);
         public Guest GetGuest(string firstName, string lastName);
         public ICollection<Guest> GetGuests(byte hours);
+
         //checking
         public bool GuestExists(int guestId);
 

@@ -10,6 +10,7 @@ namespace FitnessApp2.Interfaces
         public Course GetCourse(string name);
         public ICollection<Course> GetCourses(string difficulty);
         public ICollection<Course> GetCourses(byte rating);
+
         //checking
         public bool CourseExists(int courseId);
     }

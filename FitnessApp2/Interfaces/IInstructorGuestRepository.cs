@@ -21,6 +21,5 @@ namespace FitnessApp2.Interfaces
 
         //deleting one guest from a instructor<->guest
         public bool DeleteInstructorGuest(InstructorGuest instructorGuest);
-
     }
 }

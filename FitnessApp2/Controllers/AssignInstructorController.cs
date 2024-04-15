@@ -1,13 +1,7 @@
-﻿using FitnessApp2.Interfaces;
-using FitnessApp2.Models.DbEntities;
+﻿using FitnessApp2.Models.DbEntities;
 using FitnessApp2.Models.ViewModels;
-using FitnessApp2.Repository;
 using FitnessApp2.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Diagnostics;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Linq.Expressions;
-using System.Reflection;
 
 namespace FitnessApp2.Controllers
 {
@@ -73,7 +67,7 @@ namespace FitnessApp2.Controllers
                     return View("EditAssignInstructor", rebuiltAssignInstructorViewModel);
                 }
 
-                //check if instructor has at least 5 hours free to take on one more course with at least 1...5 guests (which can choose between 1...5 hours)
+                //check if instructor has at least 5 hours free to take on one more course with at least 1...5 guests (each guest can have between 1...5 hours)
                 bool instrucHasFreeHours = _fitnessServices.CheckInstructorHasFreeHours(assignInstructorViewModel.Id, (byte)35, "forAssignInstructor", (byte)0);
                 if (!instrucHasFreeHours)
                 {
@@ -200,12 +194,12 @@ namespace FitnessApp2.Controllers
                                 }
                                 List<ScheduleInstructorViewModel> freeHoursScheduleInstructorsViewModel = scheduleInstructorViewModelsWithoutCurrent.Where(elem => elem.FreeHours >= 5 && elem.FreeHours <= 40).OrderByDescending(elem => elem.FreeHours).ToList();
 
-                                //filter List instructors only the ones with assigned courses
+                                //filter List instructors only the ones with assigned courses; also order descending by free hours
                                 List<ScheduleInstructorViewModel> withAssignedCoursesScheduleInstructorsViewModel = freeHoursScheduleInstructorsViewModel.Where(elem => elem.CrsAndGst != null).OrderByDescending(elem => elem.FreeHours).ToList(); ;
 
                                 if (withAssignedCoursesScheduleInstructorsViewModel.Count >= 1)
                                 {
-                                    //register currentGuest to myListInstructors[0].Id
+                                    //register currentGuest to myListInstructors[0].Id - is instructor with the most amount of free hours
                                     InstructorGuest instructorGuestToRegister = new InstructorGuest()
                                     {
                                         InstructorId = withAssignedCoursesScheduleInstructorsViewModel[0].Id,

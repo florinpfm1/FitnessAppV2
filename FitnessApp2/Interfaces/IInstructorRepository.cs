@@ -10,6 +10,7 @@ namespace FitnessApp2.Interfaces
         public Instructor GetInstructor(string firstName, string lastName);
         public ICollection<Instructor> GetInstructors(byte expYears);
         public ICollection<Instructor> GetInstructors(char gender);
+
         //checking
         public bool InstructorExists(int instrucId);
 

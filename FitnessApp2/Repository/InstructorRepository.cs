@@ -49,7 +49,7 @@ namespace FitnessApp2.Repository
             return _context.Instructors.Where(i => i.Gender == gender).OrderBy(i => i.Id).ToList();
         }
 
-        //checks if an instructors exists in db with that Id ( Any() will return a bool true/false )
+        //check if an instructors exists in db with that Id
         public bool InstructorExists(int instrucId)
         {
             return _context.Instructors.Any(i => i.Id == instrucId);

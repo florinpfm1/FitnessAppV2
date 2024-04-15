@@ -75,13 +75,13 @@ namespace FitnessApp2.Services
             return _instructorRepository.CreateInstructor(instructor);
         }
 
-        //~~~ updating an existing instructor ~~~
+        //~~~ UPDATING an existing INSTRUCTOR ~~~
         public bool UpdateInstructor(Instructor instructor)
         {
             return _instructorRepository.UpdateInstructor(instructor);
         }
 
-        //~~~ deleting an existing instructor ~~~
+        //~~~ DELETING an existing INSTRUCTOR ~~~
         public bool DeleteInstructor(Instructor instructor)
         {
             return _instructorRepository.DeleteInstructor(instructor);
@@ -100,7 +100,7 @@ namespace FitnessApp2.Services
             return _guestRepository.GetUnassignedGuests();
         }
 
-        //get one guest by id
+        //get one guest by Id
         public Guest GetGuest(int id)
         {
             return _guestRepository.GetGuest(id);
@@ -124,7 +124,7 @@ namespace FitnessApp2.Services
             return _sectionRepository.GetSection(name);
         }
 
-        //get one detail by id
+        //get one detail by Id
         public Detail GetDetail(int? id)
         {
             return _detailRepository.GetDetail(id);
@@ -148,26 +148,26 @@ namespace FitnessApp2.Services
             return _guestRepository.CreateGuest(guest);
         }
 
-        //~~~ updating an existing instructor ~~~
+        //~~~ UPDATING an existing GUEST ~~~
         public bool UpdateGuest(Guest guest)
         {
             return _guestRepository.UpdateGuest(guest);
         }
 
-        //~~~ deleting an existing instructor ~~~
+        //~~~ DELETING an existing GUEST ~~~
         public bool DeleteGuest(Guest guest)
         {
             return _guestRepository.DeleteGuest(guest);
         }
 
         //======================================   WAITLIST GUESTS   ======================================
-        //retrieve detail by email and phone
+        //retrieve detail by Email and Phone
         public Detail GetDetailByPhoneAndEmail(string email, string phone)
         {
             return _detailRepository.GetDetailByPhoneAndEmail(email, phone);
         }
 
-        //~~~ creating a new detail ~~~
+        //~~~ CREATING a new detail ~~~
         public bool CreateDetail(Detail detail)
         {
             return _detailRepository.CreateDetail(detail);
@@ -225,7 +225,7 @@ namespace FitnessApp2.Services
             return assignInstructorViewModel;
         }
 
-        //retrieve available courses to be assigned for AssignInstructor by id as <SelectListItem>
+        //retrieve available courses to be assigned for AssignInstructor by Id as <SelectListItem>
         public List<SelectListItem> GetAvailableCoursesAssignInstruc(int Id)
         {
             //get a list of course that can be assigned to instructor
@@ -315,7 +315,7 @@ namespace FitnessApp2.Services
             return assignedHoursForInstructor;
         }
 
-        //check if instructor has at least 5 hours free to take on one more course with at least 1...5 guests (which can choose between 1...5 hours)
+        //check if instructor has at least 5 hours free to take on one more course with at least 1...5 guests (each guest can have between 1...5 hours)
         //check if instructor has free hours equal at least with the hours demanded by the new registered guest
         public bool CheckInstructorHasFreeHours(int instrucId, byte hoursLimit, string forAction, byte? guestHours)
         {
@@ -391,7 +391,7 @@ namespace FitnessApp2.Services
             return registerGuestsViewModel;
         }
 
-        //build RegisterGuestViewModel with dropdown options
+        //build RegisterGuestViewModel with dropdown options as <SelectListItem>
         public RegisterGuestViewModel BuildRegisterGuestViewModel(int Id)
         {
             //get a list of courses that can be assigned to guest <SelectListItem>
@@ -414,7 +414,7 @@ namespace FitnessApp2.Services
             return registerGuestViewModel;
         }
 
-        //retrieve available courses to register for RegisterGuest by id as <SelectListItem>
+        //retrieve available courses to register for RegisterGuest by Id as <SelectListItem>
         public List<SelectListItem> GetAvailableCoursesRegisterGuest(int Id)
         {
             List<Course> allCoursesInDb = _courseRepository.GetCourses().ToList();
@@ -528,7 +528,7 @@ namespace FitnessApp2.Services
 
         ////====================================== UN-ASSIGN / UN-REGISTER operations //======================================
         //__________ for RegisterGuest __________
-        //deleting one guest from all registered courses and all assigned instructors
+        //deleting one guest from all registered courses and all registered instructors
         public ICollection<CourseGuest> GetCoursesByGuestId(int guestId)
         {
             return _courseGuestRepository.GetCoursesByGuestId(guestId);
@@ -547,7 +547,7 @@ namespace FitnessApp2.Services
         {
             return _instructorGuestRepository.DeleteAllInstructorGuest(listOfInstructorGuest);
         }
-        //deleting one guest from a course and from an instructor
+        //deleting one guest from a registered course and from a registered instructor
         public CourseGuest GetCourseGuestByCourseIdAndGuestId(int courseId, int guestId)
         {
             return _courseGuestRepository.GetCourseGuestByCourseIdAndGuestId(courseId, guestId);
@@ -567,9 +567,8 @@ namespace FitnessApp2.Services
             return _instructorGuestRepository.DeleteInstructorGuest(instructorGuest);
         }
 
-
         //__________ for AssignInstructor __________
-        //deleting an instructor from all assigned courses together with their guests
+        //deleting an instructor from all assigned courses and for guests of each course deregister them and register to instructors with free hours
         public ICollection<CourseInstructor> GetInstructorsByCourseId(int courseId)
         {
             return _courseInstructorRepository.GetInstructorsByCourseId(courseId);
